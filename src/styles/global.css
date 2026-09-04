@@ -1,0 +1,134 @@
+/* ==========================================================================
+   LÜM — Design tokens
+   Direction artistique reprise du visuel « Une foccacia ? » :
+   bleu électrique sur crème, traits épais, formes arrondies, illustrations
+   au trait et accents manuscrits.
+   ========================================================================== */
+
+:root {
+  /* --- Couleurs ------------------------------------------------------- */
+  --blue: #1800ac;          /* Encre principale : fonds, textes, traits */
+  --blue-dark: #12007f;     /* Survols, ombres portées */
+  --blue-light: #5b4ad4;    /* Bordures secondaires, texte atténué */
+  --cream: #f9f1e6;         /* Fond de page et des blocs */
+  --cream-dark: #f0e5d4;    /* Aplats secondaires, séparateurs */
+  --white: #ffffff;         /* Contours de titres, texte sur bleu */
+
+  /* --- Typographie ---------------------------------------------------- */
+  --font-display: 'Anton', 'Impact', sans-serif;      /* Titres affiche */
+  --font-body: 'Nunito Variable', system-ui, sans-serif; /* UI et texte courant */
+  --font-script: 'Caveat', cursive;                   /* Accents manuscrits */
+
+  /* --- Formes --------------------------------------------------------- */
+  --radius: 18px;
+  --radius-lg: 28px;
+  --border: 3px solid var(--blue);
+  --shadow: 0 4px 20px rgba(24, 0, 172, 0.12);
+  --shadow-hover: 0 10px 32px rgba(24, 0, 172, 0.22);
+
+  /* --- Rythme --------------------------------------------------------- */
+  --page-max: 1200px;
+  --gutter: 24px;
+  --section-y: 80px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  margin: 0;
+  background: var(--blue);
+  color: var(--blue);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 400; /* Anton n'a qu'une graisse */
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* --- Titre contourné, comme sur l'affiche ----------------------------- */
+.lum-outlined {
+  color: var(--blue);
+  -webkit-text-stroke: 6px var(--white);
+  paint-order: stroke fill;
+}
+
+/* --- Bouton pilule ---------------------------------------------------- */
+.lum-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 30px;
+  border: 3px solid var(--blue);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--blue);
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.lum-pill-btn:hover {
+  background: var(--blue);
+  color: var(--cream);
+}
+
+.lum-pill-btn .arrow {
+  transition: transform 0.2s;
+}
+
+.lum-pill-btn:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* Sur fond bleu, on inverse */
+.lum-pill-btn--inverse {
+  border-color: var(--cream);
+  color: var(--cream);
+}
+
+.lum-pill-btn--inverse:hover {
+  background: var(--cream);
+  color: var(--blue);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
