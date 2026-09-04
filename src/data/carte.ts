@@ -105,7 +105,7 @@ export const formules: Formule[] = [
     prix: '10,50 €',
     composition: [
       '1 Focaccia : Poulet Curry, Thon Gourmand ou Œufs Crémeux',
-      "1 boisson : Eau St Amand, San Pellegrino, Citronnade ou Jus d'Orange",
+      "1 boisson : Eau St Amand, San Pellegrino ou Citronnade",
     ],
     supplement: '+2,00 € : Kombucha ou Ginger Beer',
   },
