@@ -27,6 +27,8 @@ const liens = [
         <h1>C'est la braderie&nbsp;!</h1>
       </div>
 
+      <p class="dates">5 &amp; 6 septembre</p>
+
       <p class="script">Ça se passe au lüm</p>
 
       <svg class="cup" viewBox="0 0 120 110" role="img" aria-label="Tasse de café">
@@ -47,8 +49,18 @@ const liens = [
       </svg>
 
       <p class="lede">
-        Coffee shop &amp; vente à emporter, au cœur du Vieux-Lille.<br />
+        Coffee shop &amp; vente à emporter, au cœur de Lille.<br />
         Focaccias, pâtisseries et café, à consommer sur le pouce.
+      </p>
+
+      <p class="adresse">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" />
+            <circle cx="12" cy="10" r="2.6" />
+          </g>
+        </svg>
+        64 rue du Molinel, Lille
       </p>
 
       <a class="lum-pill-btn" href={`${base}/carte`}>
@@ -84,9 +96,9 @@ const liens = [
 
     <footer class="pied">
       <p>
-        {'Notre autre adresse\u00a0: '}
+        {'Notre second lieu\u00a0: '}
         <a href="https://lumvieuxlille.fr" target="_blank" rel="noopener noreferrer">
-          lumvieuxlille.fr <span class="arrow">→</span>
+          LÜM Vieux-Lille <span class="arrow">→</span>
         </a>
       </p>
     </footer>
@@ -135,6 +147,14 @@ const liens = [
     font-size: clamp(2rem, 6vw, 3.4rem);
   }
 
+  .dates {
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 3.2vw, 1.5rem);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
   .script {
     font-family: var(--font-script);
     font-size: 1.6rem;
@@ -148,9 +168,28 @@ const liens = [
     color: var(--blue);
   }
 
+  .adresse {
+    /* flex et non inline-flex : sinon l'adresse et le bouton se suivent
+       sur la même ligne au lieu de s'empiler */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 30px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+  }
+
+  .adresse svg {
+    width: 19px;
+    height: 19px;
+    flex: none;
+  }
+
   .lede {
     max-width: 46ch;
-    margin: 0 auto 34px;
+    margin: 0 auto 26px;
     font-weight: 700;
     font-size: 1.05rem;
     text-wrap: balance;

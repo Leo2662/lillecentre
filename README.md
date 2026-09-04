@@ -1,6 +1,8 @@
-# LÜM — Vieux-Lille
+# LÜM — Lille Centre
 
-Landing page du coffee shop et de la vente à emporter LÜM, dans le Vieux-Lille.
+Landing page du coffee shop et de la vente à emporter LÜM Lille Centre,
+64 rue du Molinel à Lille. Le second établissement, LÜM Vieux-Lille, a son
+propre site : https://lumvieuxlille.fr
 
 État actuel : initialisation du projet — une page « hello world » qui pose la
 direction artistique et les fondations techniques.
