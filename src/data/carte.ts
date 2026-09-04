@@ -59,8 +59,8 @@ export const rubriques: Rubrique[] = [
       { nom: 'San Pellegrino 50 cl', prix: '2,60 €' },
       { nom: 'Citronnade Maison', prix: '3,90 €' },
       { nom: "Jus d'Orange Pressé", prix: '4,50 €' },
-      { nom: 'Kombucha Framboise', prix: '6,00 €' },
-      { nom: 'Ginger Beer Bio', prix: '6,00 €' },
+      { nom: 'Kombucha Framboise', prix: '4,50 €' },
+      { nom: 'Ginger Beer Bio', prix: '4,50 €' },
     ],
   },
   {
