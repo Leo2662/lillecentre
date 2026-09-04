@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout>
@@ -33,7 +35,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         Le café, les foccacias et les horaires arrivent très vite.
       </p>
 
-      <a class="lum-pill-btn" href="/">
+      <a class="lum-pill-btn" href={`${base}/`}>
         Bientôt ici <span class="arrow">→</span>
       </a>
     </section>
