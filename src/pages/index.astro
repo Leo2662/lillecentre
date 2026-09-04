@@ -2,6 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const liens = [
+  {
+    nom: 'Instagram',
+    url: 'https://www.instagram.com/lum_lillecentre',
+    // Appareil photo au trait, dans l'esprit des illustrations de l'affiche
+    trace:
+      'M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Z M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z M17.4 6.6h.01',
+  },
+  {
+    nom: 'TikTok',
+    url: 'https://www.tiktok.com/@lum_lillecentre',
+    trace:
+      'M14 3v12.2a3.8 3.8 0 1 1-3.2-3.75 M14 3c.4 2.6 2 4.2 4.6 4.5',
+  },
+];
 ---
 
 <BaseLayout>
@@ -38,7 +54,42 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <a class="lum-pill-btn" href={`${base}/`}>
         Bientôt ici <span class="arrow">→</span>
       </a>
+
+      <div class="reseaux">
+        {
+          liens.map((lien) => (
+            <a
+              class="reseau"
+              href={lien.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`LÜM sur ${lien.nom}`}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d={lien.trace}
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span>{lien.nom}</span>
+            </a>
+          ))
+        }
+      </div>
     </section>
+
+    <footer class="pied">
+      <p>
+        {'Notre autre adresse\u00a0: '}
+        <a href="https://lumvieuxlille.fr" target="_blank" rel="noopener noreferrer">
+          lumvieuxlille.fr <span class="arrow">→</span>
+        </a>
+      </p>
+    </footer>
   </main>
 </BaseLayout>
 
@@ -47,8 +98,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     min-height: 100vh;
     padding: 40px var(--gutter);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 28px;
   }
 
   .panel {
@@ -99,6 +152,70 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     font-weight: 700;
     font-size: 1.05rem;
     text-wrap: balance;
+  }
+
+  /* --- Réseaux sociaux, dans le panneau crème --- */
+  .reseaux {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 38px;
+    padding-top: 26px;
+    border-top: 2px solid var(--cream-dark);
+  }
+
+  .reseau {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 20px;
+    border: 2.5px solid var(--blue);
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .reseau svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .reseau:hover,
+  .reseau:focus-visible {
+    background: var(--blue);
+    color: var(--cream);
+  }
+
+  /* --- Pied de page, sur le bleu --- */
+  .pied {
+    color: var(--cream);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .pied a {
+    border-bottom: 2px solid rgba(249, 241, 230, 0.45);
+    padding-bottom: 1px;
+    transition: border-color 0.2s;
+  }
+
+  .pied a:hover,
+  .pied a:focus-visible {
+    border-bottom-color: var(--cream);
+  }
+
+  .pied .arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+
+  .pied a:hover .arrow {
+    transform: translateX(3px);
   }
 
   @keyframes fade-up {
