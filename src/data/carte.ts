@@ -89,7 +89,7 @@ export const formules: Formule[] = [
     prix: '3,50 €',
     composition: [
       '1 Croissant',
-      "1 boisson : Espresso, Allongé, Double Espresso, Café Filtre ou Jus d'Orange",
+      '1 Café Filtre Tropikawa',
     ],
   },
   {
@@ -97,7 +97,7 @@ export const formules: Formule[] = [
     prix: '5,50 €',
     composition: [
       '1 Cookie ou Cinnamon Roll',
-      "1 boisson : Espresso, Allongé, Café Filtre ou Jus d'Orange",
+      '1 Café Filtre Tropikawa',
     ],
   },
   {
