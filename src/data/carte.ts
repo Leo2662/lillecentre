@@ -71,7 +71,7 @@ export const rubriques: Rubrique[] = [
       { nom: 'Café Allongé', prix: '3,70 €' },
       { nom: 'Café Filtre Tropikawa', prix: '3,60 €' },
       { nom: 'Cappuccino', prix: '4,50 €' },
-      { nom: 'Latte', prix: '5,20 €' },
+      { nom: 'Latte', prix: '4,50 €' },
       { nom: 'Chocolat Chaud', prix: '5,00 €' },
       { nom: 'Chaï Latte', prix: '5,00 €' },
       { nom: 'Matcha Latte', prix: '5,00 €' },
