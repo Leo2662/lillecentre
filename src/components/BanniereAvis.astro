@@ -1,0 +1,133 @@
+---
+import Bilingue from './Bilingue.astro';
+
+// Lien tel que fourni, paramètre de partage compris : impossible de vérifier
+// depuis ici qu'une version raccourcie redirige aussi bien.
+const AVIS_GOOGLE = 'https://maps.app.goo.gl/FbubSeeN7LJmhv847?g_st=ic';
+---
+
+<aside class="banniere">
+  <div class="etoiles" aria-hidden="true">
+    {
+      Array.from({ length: 5 }).map(() => (
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9L12 2.6Z"
+            fill="currentColor"
+          />
+        </svg>
+      ))
+    }
+  </div>
+
+  <p class="titre">
+    <Bilingue fr="Vous avez aimé ?" en="Enjoyed your visit?" />
+  </p>
+
+  <p class="texte">
+    <Bilingue
+      fr="Un avis Google, c'est deux minutes — et ça change tout pour nous."
+      en="A Google review takes two minutes — and it means the world to us."
+    />
+  </p>
+
+  <a class="bouton" href={AVIS_GOOGLE} target="_blank" rel="noopener noreferrer">
+    <Bilingue fr="Laisser un avis" en="Leave a review" />
+    <span class="arrow">→</span>
+  </a>
+</aside>
+
+<style>
+  .banniere {
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 30px 28px 32px;
+    border: 3px solid var(--blue);
+    border-radius: var(--radius-lg);
+    background: var(--cream);
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .etoiles {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 14px;
+    color: var(--blue);
+  }
+
+  .etoiles svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  /* Les étoiles apparaissent l'une après l'autre : le clin d'œil qui donne
+     son énergie à la bannière, sans animation permanente. */
+  .etoiles svg {
+    animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .etoiles svg:nth-child(2) { animation-delay: 0.07s; }
+  .etoiles svg:nth-child(3) { animation-delay: 0.14s; }
+  .etoiles svg:nth-child(4) { animation-delay: 0.21s; }
+  .etoiles svg:nth-child(5) { animation-delay: 0.28s; }
+
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.4) rotate(-25deg); }
+    to   { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .titre {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4.4vw, 2.1rem);
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  .texte {
+    max-width: 44ch;
+    margin: 10px auto 22px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    text-wrap: balance;
+  }
+
+  /* Bouton plein, à l'inverse des boutons ajourés du reste du site :
+     c'est lui qui doit accrocher l'œil. */
+  .bouton {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 32px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: var(--cream);
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .bouton:hover,
+  .bouton:focus-visible {
+    background: var(--blue-dark);
+    transform: translateY(-2px);
+  }
+
+  .bouton .arrow {
+    transition: transform 0.2s;
+  }
+
+  .bouton:hover .arrow {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 768px) {
+    .banniere {
+      padding: 26px 20px 28px;
+    }
+  }
+</style>

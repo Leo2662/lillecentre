@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BanniereAvis from '../components/BanniereAvis.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -100,6 +101,8 @@ const liens = [
         }
       </div>
     </section>
+
+    <BanniereAvis />
 
     <footer class="pied">
       <p>
