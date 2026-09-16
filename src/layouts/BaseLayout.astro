@@ -8,6 +8,8 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  // Pages utilitaires (affiche à imprimer) : inutile de les référencer.
+  noindex?: boolean;
 }
 
 // `base` est pris en compte : les chemins absolus doivent en tenir compte.
@@ -16,6 +18,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const {
   title = 'LÜM — Lille Centre',
   description = 'Coffee & Lunch to go — LÜM Lille Centre, 64 rue du Molinel',
+  noindex = false,
 } = Astro.props;
 
 // Données structurées de l'établissement, pour les moteurs de recherche.
@@ -72,6 +75,7 @@ const donneesStructurees = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <title>{title}</title>

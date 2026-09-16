@@ -16,5 +16,8 @@
     "@fontsource/anton": "^5.3.0",
     "@fontsource/caveat": "^5.3.0",
     "astro": "^7.3.1"
+  },
+  "devDependencies": {
+    "qrcode": "^1.5.4"
   }
 }

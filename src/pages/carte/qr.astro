@@ -1,0 +1,178 @@
+---
+import QRCode from 'qrcode';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// L'URL vient de `site` : si le domaine change, l'affiche suit.
+const cible = new URL('carte/', Astro.site).href;
+
+// QR généré au build, en SVG : vectoriel, donc net quelle que soit la taille
+// d'impression, et sans dépendre du chargement d'une image.
+// Correction d'erreur maximale : une affiche de comptoir se salit et s'abîme.
+const qr = await QRCode.toString(cible, {
+  type: 'svg',
+  errorCorrectionLevel: 'H',
+  margin: 0,
+  color: { dark: '#1800AC', light: '#F9F1E6' },
+});
+
+const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
+---
+
+<BaseLayout title="Affiche QR — LÜM Lille Centre" noindex>
+  <div class="ecran-seulement barre">
+    <p>Affiche prête pour une impression A4. Pensez à activer les couleurs d'arrière-plan.</p>
+    <button type="button" id="imprimer" class="lum-pill-btn lum-pill-btn--inverse">
+      Imprimer <span class="arrow">→</span>
+    </button>
+  </div>
+
+  <div class="affiche">
+    <p class="marque">
+      LÜM
+      <small>Lille Centre</small>
+    </p>
+
+    <div class="cartouche">
+      <h1>La carte</h1>
+    </div>
+
+    <div class="qr" set:html={qr} />
+
+    <p class="consigne">Scannez pour découvrir la carte</p>
+    <p class="consigne consigne--en" lang="en">Scan for the menu</p>
+
+    <p class="url">{lisible}</p>
+  </div>
+</BaseLayout>
+
+<style>
+  /* --- Mise en page d'impression --- */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  .affiche {
+    width: 210mm;
+    height: 297mm;
+    padding: 20mm 18mm;
+    background: var(--blue);
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* Sans cela, les navigateurs retirent les aplats à l'impression. */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .marque {
+    font-family: var(--font-display);
+    font-size: 13mm;
+    line-height: 1;
+    letter-spacing: 0.06em;
+  }
+
+  .marque small {
+    display: block;
+    margin-top: 2mm;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 3.4mm;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .cartouche {
+    margin: 12mm 0 10mm;
+    padding: 4mm 10mm;
+    border: 1mm solid var(--cream);
+    border-radius: 5mm;
+  }
+
+  .cartouche h1 {
+    font-size: 16mm;
+    line-height: 1;
+  }
+
+  /* Le fond crème déborde du QR : c'est la zone de silence, sans laquelle
+     les lecteurs peinent à accrocher le code. */
+  .qr {
+    padding: 8mm;
+    border-radius: 4mm;
+    background: var(--cream);
+    line-height: 0;
+  }
+
+  .qr :global(svg) {
+    width: 85mm;
+    height: 85mm;
+    display: block;
+  }
+
+  .consigne {
+    margin-top: 10mm;
+    font-family: var(--font-display);
+    font-size: 7mm;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .consigne--en {
+    margin-top: 2mm;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 4.6mm;
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+  }
+
+  .url {
+    margin-top: 12mm;
+    font-weight: 800;
+    font-size: 4.6mm;
+    letter-spacing: 0.06em;
+  }
+
+  /* --- Confort à l'écran, jamais imprimé --- */
+  .barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 20px var(--gutter);
+    color: var(--cream);
+    font-weight: 700;
+    text-align: center;
+  }
+
+  @media print {
+    .ecran-seulement {
+      display: none;
+    }
+  }
+
+  @media screen {
+    .affiche {
+      margin: 0 auto 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    /* L'affiche fait 210 mm de large : on la réduit sur petit écran
+       plutôt que d'imposer un défilement horizontal. */
+    @media (max-width: 820px) {
+      .affiche {
+        transform: scale(0.42);
+        transform-origin: top center;
+        margin-bottom: calc(-297mm * 0.58 + 40px);
+      }
+    }
+  }
+</style>
+
+<script>
+  document.getElementById('imprimer')?.addEventListener('click', () => window.print());
+</script>
