@@ -17,6 +17,32 @@ const {
   title = 'LÜM — Lille Centre',
   description = "Coffee shop et vente à emporter au 64 rue du Molinel, à Lille.",
 } = Astro.props;
+
+// Données structurées de l'établissement, pour les moteurs de recherche.
+// Les URL dérivent de `site` (astro.config.mjs) afin de rester cohérentes.
+// Ne renseigner ici que des informations vérifiées : ces champs alimentent
+// les fiches des moteurs, une valeur inventée y serait publiée telle quelle.
+const donneesStructurees = {
+  '@context': 'https://schema.org',
+  '@type': 'CafeOrCoffeeShop',
+  '@id': new URL('#etablissement', Astro.site).href,
+  name: 'LÜM Lille Centre',
+  description: "Coffee shop et vente à emporter au 64 rue du Molinel, à Lille.",
+  url: Astro.site.href,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '64 rue du Molinel',
+    addressLocality: 'Lille',
+    addressCountry: 'FR',
+  },
+  servesCuisine: 'Café',
+  priceRange: '€',
+  hasMenu: new URL('carte/', Astro.site).href,
+  sameAs: [
+    'https://www.instagram.com/lum_lillecentre',
+    'https://www.tiktok.com/@lum_lillecentre',
+  ],
+};
 ---
 
 <!doctype html>
@@ -28,6 +54,7 @@ const {
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(donneesStructurees)} />
   </head>
   <body>
     <slot />
