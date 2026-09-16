@@ -1,4 +1,6 @@
 ---
+import Bilingue from './Bilingue.astro';
+
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
@@ -8,7 +10,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <small>Lille Centre</small>
   </a>
   <a class="retour" href={`${base}/`}>
-    <span class="arrow">←</span> Retour
+    <span class="arrow">←</span> <Bilingue fr="Retour" en="Back" />
   </a>
 </header>
 

@@ -15,7 +15,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const {
   title = 'LÜM — Lille Centre',
-  description = 'Coffee & Lunch to go',
+  description = 'Coffee & Lunch to go — LÜM Lille Centre, 64 rue du Molinel',
 } = Astro.props;
 
 // Données structurées de l'établissement, pour les moteurs de recherche.
@@ -60,8 +60,8 @@ const donneesStructurees = {
   priceRange: '€',
   hasMenu: new URL('carte/', Astro.site).href,
   sameAs: [
-    'https://www.instagram.com/lum_lillecentre',
-    'https://www.tiktok.com/@lum_lillecentre',
+    'https://www.instagram.com/lum_lille',
+    'https://www.tiktok.com/@lum_vieuxlille',
   ],
 };
 ---

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Entete from '../components/Entete.astro';
+import Bilingue from '../components/Bilingue.astro';
 import { rubriques } from '../data/carte';
 ---
 
@@ -11,24 +12,39 @@ import { rubriques } from '../data/carte';
   <div class="page">
     <Entete />
 
-    <h1 class="titre-page">La carte</h1>
+    <h1 class="titre-page"><Bilingue fr="La carte" en="The Menu" /></h1>
+
+    <div class="langues" role="group" aria-label="Langue de la carte / Menu language">
+      <button type="button" class="langue" data-langue="fr" aria-pressed="true">FR</button>
+      <button type="button" class="langue" data-langue="en" aria-pressed="false">EN</button>
+    </div>
 
     {
       rubriques.map((rubrique) => (
         <section class="bloc">
           <div class="chip">
-            <h2>{rubrique.titre}</h2>
+            <h2>
+              <Bilingue fr={rubrique.titre} en={rubrique.titreEn} />
+            </h2>
           </div>
 
           <ul class={rubrique.articles.length > 8 ? 'articles articles--deux' : 'articles'}>
             {rubrique.articles.map((article) => (
               <li class="article">
                 <div class="article__ligne">
-                  <span class="article__nom">{article.nom}</span>
+                  <span class="article__nom">
+                    <Bilingue fr={article.nom} en={article.nomEn} />
+                  </span>
                   <span class="article__filet" aria-hidden="true" />
                   <span class="article__prix">{article.prix}</span>
                 </div>
-                {article.description && <p class="article__desc">{article.description}</p>}
+                {
+                  article.description && (
+                    <p class="article__desc">
+                      <Bilingue fr={article.description} en={article.descriptionEn ?? article.description} />
+                    </p>
+                  )
+                }
               </li>
             ))}
           </ul>
@@ -36,7 +52,12 @@ import { rubriques } from '../data/carte';
       ))
     }
 
-    <p class="note">Prix en euros, taxes comprises.</p>
+    <p class="note">
+      <Bilingue
+        fr="Prix en euros, taxes comprises."
+        en="Prices in euros, taxes included."
+      />
+    </p>
   </div>
 </BaseLayout>
 
@@ -55,6 +76,38 @@ import { rubriques } from '../data/carte';
     text-align: center;
     font-size: clamp(2.6rem, 9vw, 5rem);
     color: var(--cream);
+  }
+
+  /* --- Sélecteur de langue --- */
+  .langues {
+    align-self: center;
+    display: inline-flex;
+    margin-top: -26px;
+    border: 2px solid rgba(249, 241, 230, 0.55);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .langue {
+    padding: 5px 15px;
+    border: 0;
+    background: transparent;
+    color: var(--cream);
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .langue[aria-pressed='true'] {
+    background: var(--cream);
+    color: var(--blue);
+  }
+
+  .langue:not([aria-pressed='true']):hover {
+    background: rgba(249, 241, 230, 0.15);
   }
 
   /* --- Bloc crème, avec cartouche de titre à cheval sur le bord --- */
@@ -149,3 +202,37 @@ import { rubriques } from '../data/carte';
     }
   }
 </style>
+
+<script>
+  const boutons = document.querySelectorAll('[data-langue]');
+  const MEMOIRE = 'lum-langue';
+
+  function appliquer(langue) {
+    document.querySelectorAll('.t-fr').forEach((e) => {
+      e.hidden = langue !== 'fr';
+    });
+    document.querySelectorAll('.t-en').forEach((e) => {
+      e.hidden = langue !== 'en';
+    });
+    boutons.forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.langue === langue));
+    });
+    document.documentElement.lang = langue;
+  }
+
+  boutons.forEach((b) => {
+    b.addEventListener('click', () => {
+      const langue = b.dataset.langue;
+      appliquer(langue);
+      // Le choix est propre au visiteur : localStorage peut échouer
+      // (navigation privée, cookies bloqués), l'échec n'a rien de bloquant.
+      try {
+        localStorage.setItem(MEMOIRE, langue);
+      } catch {}
+    });
+  });
+
+  try {
+    if (localStorage.getItem(MEMOIRE) === 'en') appliquer('en');
+  } catch {}
+</script>
