@@ -22,6 +22,19 @@ npm run build    # génère le site statique dans dist/
 npm run preview  # prévisualise le build
 ```
 
+## Affiche QR
+
+La page `/carte/qr` est une affiche A4 destinée au comptoir, avec un QR vers
+la carte. Le PDF téléchargeable depuis cette page vit dans
+`public/affiche-carte-lum.pdf` et n'est pas régénéré automatiquement :
+
+```bash
+npm run build && npm run affiche   # réécrit le PDF depuis la page construite
+```
+
+À relancer après toute modification de l'affiche ou du domaine, sinon le PDF
+téléchargé diverge de la page.
+
 ## Direction artistique
 
 Reprise du visuel « Une foccacia ? » :

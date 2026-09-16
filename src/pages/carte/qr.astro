@@ -12,36 +12,41 @@ const qr = await QRCode.toString(cible, {
   type: 'svg',
   errorCorrectionLevel: 'H',
   margin: 0,
-  color: { dark: '#1800AC', light: '#F9F1E6' },
+  color: { dark: '#1800AC', light: '#FFFFFF' },
 });
 
 const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
+
+// PDF pré-généré par `npm run affiche`, servi depuis public/.
+const PDF = '/affiche-carte-lum.pdf';
 ---
 
 <BaseLayout title="Affiche QR — LÜM Lille Centre" noindex>
   <div class="ecran-seulement barre">
-    <p>Affiche prête pour une impression A4. Pensez à activer les couleurs d'arrière-plan.</p>
-    <button type="button" id="imprimer" class="lum-pill-btn lum-pill-btn--inverse">
-      Imprimer <span class="arrow">→</span>
-    </button>
+    <p>Affiche A4, prête à imprimer.</p>
+    <a class="lum-pill-btn lum-pill-btn--inverse" href={PDF} download>
+      Enregistrer le PDF <span class="arrow">↓</span>
+    </a>
   </div>
 
   <div class="affiche">
-    <p class="marque">
-      LÜM
-      <small>Lille Centre</small>
-    </p>
+    <div class="cadre">
+      <p class="marque">
+        LÜM
+        <small>Lille Centre</small>
+      </p>
 
-    <div class="cartouche">
-      <h1>La carte</h1>
+      <div class="cartouche">
+        <h1>La carte</h1>
+      </div>
+
+      <div class="qr" set:html={qr} />
+
+      <p class="consigne">Scannez pour découvrir la carte</p>
+      <p class="consigne--en" lang="en">Scan for the menu</p>
+
+      <p class="url">{lisible}</p>
     </div>
-
-    <div class="qr" set:html={qr} />
-
-    <p class="consigne">Scannez pour découvrir la carte</p>
-    <p class="consigne consigne--en" lang="en">Scan for the menu</p>
-
-    <p class="url">{lisible}</p>
   </div>
 </BaseLayout>
 
@@ -55,17 +60,24 @@ const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
   .affiche {
     width: 210mm;
     height: 297mm;
-    padding: 20mm 18mm;
-    background: var(--blue);
-    color: var(--cream);
+    padding: 12mm;
+    background: #fff;
+    color: var(--blue);
+    /* Sans cela, les navigateurs retirent les aplats à l'impression. */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cadre {
+    height: 100%;
+    padding: 14mm 12mm;
+    border: 1.6mm solid var(--blue);
+    border-radius: 6mm;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    /* Sans cela, les navigateurs retirent les aplats à l'impression. */
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
   }
 
   .marque {
@@ -86,9 +98,9 @@ const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
   }
 
   .cartouche {
-    margin: 12mm 0 10mm;
+    margin: 11mm 0 9mm;
     padding: 4mm 10mm;
-    border: 1mm solid var(--cream);
+    border: 1mm solid var(--blue);
     border-radius: 5mm;
   }
 
@@ -97,23 +109,22 @@ const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
     line-height: 1;
   }
 
-  /* Le fond crème déborde du QR : c'est la zone de silence, sans laquelle
-     les lecteurs peinent à accrocher le code. */
+  /* Le blanc déborde du QR : c'est la zone de silence, sans laquelle les
+     lecteurs peinent à accrocher le code. */
   .qr {
-    padding: 8mm;
-    border-radius: 4mm;
-    background: var(--cream);
+    padding: 6mm;
+    background: #fff;
     line-height: 0;
   }
 
   .qr :global(svg) {
-    width: 85mm;
-    height: 85mm;
+    width: 88mm;
+    height: 88mm;
     display: block;
   }
 
   .consigne {
-    margin-top: 10mm;
+    margin-top: 9mm;
     font-family: var(--font-display);
     font-size: 7mm;
     text-transform: uppercase;
@@ -122,15 +133,15 @@ const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
 
   .consigne--en {
     margin-top: 2mm;
-    font-family: var(--font-body);
     font-weight: 700;
     font-size: 4.6mm;
     letter-spacing: 0.08em;
-    opacity: 0.75;
+    color: var(--blue-light);
+    text-transform: uppercase;
   }
 
   .url {
-    margin-top: 12mm;
+    margin-top: 11mm;
     font-weight: 800;
     font-size: 4.6mm;
     letter-spacing: 0.06em;
@@ -172,7 +183,3 @@ const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
     }
   }
 </style>
-
-<script>
-  document.getElementById('imprimer')?.addEventListener('click', () => window.print());
-</script>
