@@ -24,13 +24,6 @@ const AVIS_GOOGLE = 'https://maps.app.goo.gl/FbubSeeN7LJmhv847?g_st=ic';
     <Bilingue fr="Vous avez aimé ?" en="Enjoyed your visit?" />
   </p>
 
-  <p class="texte">
-    <Bilingue
-      fr="Un avis Google, c'est deux minutes — et ça change tout pour nous."
-      en="A Google review takes two minutes — and it means the world to us."
-    />
-  </p>
-
   <a class="bouton" href={AVIS_GOOGLE} target="_blank" rel="noopener noreferrer">
     <Bilingue fr="Laisser un avis" en="Leave a review" />
     <span class="arrow">→</span>
@@ -80,18 +73,11 @@ const AVIS_GOOGLE = 'https://maps.app.goo.gl/FbubSeeN7LJmhv847?g_st=ic';
   }
 
   .titre {
+    margin-bottom: 22px;
     font-family: var(--font-display);
     font-size: clamp(1.5rem, 4.4vw, 2.1rem);
     text-transform: uppercase;
     line-height: 1.1;
-  }
-
-  .texte {
-    max-width: 44ch;
-    margin: 10px auto 22px;
-    font-weight: 700;
-    font-size: 0.98rem;
-    text-wrap: balance;
   }
 
   /* Bouton plein, à l'inverse des boutons ajourés du reste du site :
