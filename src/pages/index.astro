@@ -74,6 +74,17 @@ const liens = [
       <a class="lum-pill-btn" href={`${base}/carte`}>
         Consulter la carte <span class="arrow">→</span>
       </a>
+    </section>
+
+    <BanniereAvis />
+
+    <footer class="pied">
+      <p>
+        {'Notre second lieu\u00a0: '}
+        <a href="https://lumvieuxlille.fr" target="_blank" rel="noopener noreferrer">
+          LÜM Vieux-Lille <span class="arrow">→</span>
+        </a>
+      </p>
 
       <div class="reseaux">
         {
@@ -100,17 +111,6 @@ const liens = [
           ))
         }
       </div>
-    </section>
-
-    <BanniereAvis />
-
-    <footer class="pied">
-      <p>
-        {'Notre second lieu\u00a0: '}
-        <a href="https://lumvieuxlille.fr" target="_blank" rel="noopener noreferrer">
-          LÜM Vieux-Lille <span class="arrow">→</span>
-        </a>
-      </p>
     </footer>
   </main>
 </BaseLayout>
@@ -211,15 +211,13 @@ const liens = [
     text-wrap: balance;
   }
 
-  /* --- Réseaux sociaux, dans le panneau crème --- */
+  /* --- Réseaux sociaux, dans le pied de page sur le bleu --- */
   .reseaux {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 12px;
-    margin-top: 38px;
-    padding-top: 26px;
-    border-top: 2px solid var(--cream-dark);
+    margin-top: 18px;
   }
 
   .reseau {
@@ -227,8 +225,9 @@ const liens = [
     align-items: center;
     gap: 9px;
     padding: 9px 20px;
-    border: 2.5px solid var(--blue);
+    border: 2.5px solid rgba(249, 241, 230, 0.55);
     border-radius: 999px;
+    color: var(--cream);
     font-weight: 800;
     font-size: 0.9rem;
     letter-spacing: 0.06em;
@@ -243,8 +242,9 @@ const liens = [
 
   .reseau:hover,
   .reseau:focus-visible {
-    background: var(--blue);
-    color: var(--cream);
+    background: var(--cream);
+    border-color: var(--cream);
+    color: var(--blue);
   }
 
   /* --- Pied de page, sur le bleu --- */
