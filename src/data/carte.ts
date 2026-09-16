@@ -16,6 +16,8 @@ export interface Article {
 export interface Rubrique {
   titre: string;
   titreEn: string;
+  // Remonte en tête de carte pendant le service du matin (voir carte.astro).
+  matinale?: boolean;
   articles: Article[];
 }
 
@@ -123,6 +125,7 @@ export const rubriques: Rubrique[] = [
   {
     titre: 'Barista',
     titreEn: 'Barista',
+    matinale: true,
     articles: [
       { nom: 'Espresso', nomEn: 'Espresso', prix: '2,50 €' },
       { nom: 'Double Espresso', nomEn: 'Double Espresso', prix: '3,70 €' },

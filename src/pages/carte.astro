@@ -9,6 +9,48 @@ import { rubriques } from '../data/carte';
   title="La carte — LÜM"
   description="Focaccias, pâtisseries, boissons et café de spécialité à emporter chez LÜM."
 >
+  <script is:inline>
+    // Service du matin : de 8h00 à 11h45, la rubrique Barista passe en tête.
+    // L'heure est celle de Paris, pas celle du visiteur : un client en
+    // déplacement doit voir la carte du café, pas celle de son fuseau.
+    // Intl gère le passage heure d'été / heure d'hiver tout seul.
+    (function () {
+      var DEBUT = 8 * 60;
+      var FIN = 11 * 60 + 45;
+
+      function minutesAParis() {
+        var parts = new Intl.DateTimeFormat('fr-FR', {
+          timeZone: 'Europe/Paris',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).formatToParts(new Date());
+        var h, m;
+        for (var i = 0; i < parts.length; i++) {
+          if (parts[i].type === 'hour') h = parseInt(parts[i].value, 10);
+          if (parts[i].type === 'minute') m = parseInt(parts[i].value, 10);
+        }
+        return h * 60 + m;
+      }
+
+      function appliquer() {
+        try {
+          var n = minutesAParis();
+          document.documentElement.classList.toggle(
+            'service-matin',
+            n >= DEBUT && n < FIN
+          );
+        } catch (e) {
+          // Fuseau indisponible : on garde l'ordre par défaut de la page.
+        }
+      }
+
+      appliquer();
+      // Une page laissée ouverte sur le comptoir doit basculer à 11h45.
+      setInterval(appliquer, 30000);
+    })();
+  </script>
+
   <div class="page">
     <Entete />
 
@@ -19,9 +61,10 @@ import { rubriques } from '../data/carte';
       <button type="button" class="langue" data-langue="en" aria-pressed="false">EN</button>
     </div>
 
-    {
-      rubriques.map((rubrique) => (
-        <section class="bloc">
+    <div class="rubriques">
+      {
+        rubriques.map((rubrique) => (
+          <section class:list={['bloc', rubrique.matinale && 'bloc--matinale']}>
           <div class="chip">
             <h2>
               <Bilingue fr={rubrique.titre} en={rubrique.titreEn} />
@@ -47,10 +90,11 @@ import { rubriques } from '../data/carte';
                 }
               </li>
             ))}
-          </ul>
-        </section>
-      ))
-    }
+            </ul>
+          </section>
+        ))
+      }
+    </div>
 
     <p class="note">
       <Bilingue
@@ -108,6 +152,19 @@ import { rubriques } from '../data/carte';
 
   .langue:not([aria-pressed='true']):hover {
     background: rgba(249, 241, 230, 0.15);
+  }
+
+  .rubriques {
+    display: flex;
+    flex-direction: column;
+    gap: 46px;
+  }
+
+  /* Service du matin : la rubrique Barista passe en tête. On joue sur l'ordre
+     d'affichage plutôt que de déplacer le nœud, afin que le basculement soit
+     déjà en place au premier rendu, sans saut visible. */
+  :global(html.service-matin) .bloc--matinale {
+    order: -1;
   }
 
   /* --- Bloc crème, avec cartouche de titre à cheval sur le bord --- */
