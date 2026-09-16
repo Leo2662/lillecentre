@@ -226,7 +226,9 @@ const liens = [
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 12px;
+    /* Sans contour, les deux liens ont besoin de plus d'air pour ne pas
+       se lire comme un seul bloc. */
+    gap: 30px;
     margin-top: 18px;
   }
 
@@ -234,15 +236,15 @@ const liens = [
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    padding: 9px 20px;
-    border: 2.5px solid rgba(249, 241, 230, 0.55);
-    border-radius: 999px;
+    /* Pas de contour, mais on garde ce calage : il assure une cible tactile
+       confortable sans rien afficher. */
+    padding: 9px 4px;
     color: var(--cream);
     font-weight: 800;
     font-size: 0.9rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    transition: background 0.2s, color 0.2s;
+    transition: opacity 0.2s;
   }
 
   .reseau svg {
@@ -252,11 +254,15 @@ const liens = [
     height: 20px;
   }
 
-  .reseau:hover,
+  .reseau:hover {
+    opacity: 0.7;
+  }
+
+  /* Le contour disparu, il faut rendre le focus clavier visible autrement. */
   .reseau:focus-visible {
-    background: var(--cream);
-    border-color: var(--cream);
-    color: var(--blue);
+    outline: 2px solid var(--cream);
+    outline-offset: 5px;
+    border-radius: 4px;
   }
 
   /* --- Pied de page, sur le bleu --- */
@@ -267,14 +273,14 @@ const liens = [
     text-align: center;
   }
 
-  .pied a {
+  .pied p a {
     border-bottom: 2px solid rgba(249, 241, 230, 0.45);
     padding-bottom: 1px;
     transition: border-color 0.2s;
   }
 
-  .pied a:hover,
-  .pied a:focus-visible {
+  .pied p a:hover,
+  .pied p a:focus-visible {
     border-bottom-color: var(--cream);
   }
 
@@ -283,7 +289,7 @@ const liens = [
     transition: transform 0.2s;
   }
 
-  .pied a:hover .arrow {
+  .pied p a:hover .arrow {
     transform: translateX(3px);
   }
 
