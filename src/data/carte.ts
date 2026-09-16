@@ -13,32 +13,44 @@ export interface Rubrique {
   articles: Article[];
 }
 
-export interface Formule {
-  nom: string;
-  prix: string;
-  composition: string[];
-  supplement?: string;
-}
-
 export const rubriques: Rubrique[] = [
   {
-    titre: 'Focaccia',
+    titre: 'Focaccias (Sandwichs)',
     articles: [
       {
-        nom: 'Focaccia Poulet Curry',
+        nom: 'Poulet & Mangue',
         prix: '8,90 €',
-        description: 'Poulet au curry, salade fraîche & tomates',
+        description: 'Poulet fondant et sauce sucrée-salée.',
       },
       {
-        nom: 'Focaccia Thon Gourmand',
+        nom: 'Féta & Légumes croquants',
         prix: '8,90 €',
-        description: 'Thon, mayonnaise, salade fraîche & tomates',
+        description: 'Féta et salade de chou/carotte.',
+      },
+    ],
+  },
+  {
+    titre: 'Salades de Pâtes',
+    articles: [
+      {
+        nom: 'La Végétarienne',
+        prix: '7,90 €',
+        description:
+          'Pâtes, féta, légumes verts (courgettes, petits pois) et herbes fraîches.',
       },
       {
-        nom: 'Focaccia Œufs Crémeux',
-        prix: '8,90 €',
-        description: "Salade d'œufs, ciboulette, salade fraîche & tomate",
+        nom: 'Au Poulet',
+        prix: '7,90 €',
+        description:
+          'Pâtes, poulet, légumes verts (courgettes, petits pois) et herbes fraîches.',
       },
+    ],
+  },
+  {
+    titre: 'Tartes Salées',
+    articles: [
+      { nom: 'Poivrons & Chèvre (Végétarienne)', prix: '6,90 €' },
+      { nom: 'Chorizo & Cheddar', prix: '6,90 €' },
     ],
   },
   {
@@ -80,42 +92,5 @@ export const rubriques: Rubrique[] = [
       { nom: 'Iced Chaï Latte', prix: '5,70 €' },
       { nom: 'Iced Matcha Latte', prix: '5,70 €' },
     ],
-  },
-];
-
-export const formules: Formule[] = [
-  {
-    nom: 'Petit Déj',
-    prix: '3,50 €',
-    composition: [
-      '1 Croissant',
-      '1 Café Filtre Tropikawa',
-    ],
-  },
-  {
-    nom: 'Petit Déj Gourmand',
-    prix: '5,50 €',
-    composition: [
-      '1 Cookie ou Cinnamon Roll',
-      '1 Café Filtre Tropikawa',
-    ],
-  },
-  {
-    nom: 'Déjeuner',
-    prix: '10,50 €',
-    composition: [
-      '1 Focaccia : Poulet Curry, Thon Gourmand ou Œufs Crémeux',
-      "1 boisson : Eau St Amand, San Pellegrino ou Citronnade",
-    ],
-    supplement: '+2,00 € : Kombucha ou Ginger Beer',
-  },
-  {
-    nom: 'Goûter',
-    prix: '8,00 €',
-    composition: [
-      '1 pâtisserie : Cookie, Cinnamon Roll, Brookie ou Marbré / Cake Matcha',
-      '1 boisson : Cappuccino, Latte, Chocolat Chaud ou Iced Americano',
-    ],
-    supplement: '+0,80 € : Fondant Sans Gluten',
   },
 ];
