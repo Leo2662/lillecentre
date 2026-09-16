@@ -21,8 +21,8 @@ export interface Rubrique {
 
 export const rubriques: Rubrique[] = [
   {
-    titre: 'Focaccias (Fait maison)',
-    titreEn: 'Focaccias (Homemade)',
+    titre: 'Focaccias (faites maison)',
+    titreEn: 'Focaccias (homemade)',
     articles: [
       {
         nom: 'Coronation Chicken',
