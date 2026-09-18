@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { qrEnSvg } from '../lib/qr';
 
-const cible = new URL('carte/', Astro.site).href;
+const cible = Astro.site.href;
 const apercu = await qrEnSvg(cible);
 const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
 
@@ -18,7 +18,7 @@ const FICHIER = '/qr-code.svg';
       <div class="qr" set:html={apercu} />
     </div>
 
-    <a class="bouton" href={FICHIER} download="lum-carte-qr.svg">
+    <a class="bouton" href={FICHIER} download="lum-qr.svg">
       Télécharger en SVG <span class="arrow">↓</span>
     </a>
 

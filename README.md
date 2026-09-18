@@ -26,9 +26,10 @@ npm run preview  # prévisualise le build
 
 Deux pages de service, sans indexation ni présence au sitemap :
 
-- `/qr-code` : le QR seul, téléchargeable en SVG. Le fichier est produit par
-  la route `src/pages/qr-code.svg.ts`, donc régénéré à chaque build.
-- `/carte/qr` : une affiche A4 destinée au comptoir, avec ce même QR.
+- `/qr-code` : le QR du site, téléchargeable en SVG. Le fichier est produit
+  par la route `src/pages/qr-code.svg.ts`, donc régénéré à chaque build.
+- `/carte/qr` : une affiche A4 destinée au comptoir, dont le QR vise la
+  carte et non l'accueil, puisque l'affiche l'annonce explicitement.
 
 Les deux partagent `src/lib/qr.ts`. Le QR de la page porte une zone de
 silence de 4 modules, celui de l'affiche la reçoit du calage CSS. Le PDF téléchargeable depuis cette page vit dans
