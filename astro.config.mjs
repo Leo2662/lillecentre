@@ -8,6 +8,10 @@ export default defineConfig({
   // Domaine propre : le site est servi à la racine, donc pas de `base`.
   site: 'https://lumlillecentre.fr',
 
-  // L'affiche QR est une page de service : hors sitemap.
-  integrations: [sitemap({ filter: (page) => !page.includes('/carte/qr') })],
+  // Pages de service (QR, affiche) : hors sitemap.
+  integrations: [
+    sitemap({
+      filter: (page) => !['/carte/qr', '/qr-code'].some((p) => page.includes(p)),
+    }),
+  ],
 });

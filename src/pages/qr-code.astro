@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { qrEnSvg } from '../lib/qr';
+
+const cible = new URL('carte/', Astro.site).href;
+const apercu = await qrEnSvg(cible);
+const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
+
+const FICHIER = '/qr-code.svg';
+---
+
+<BaseLayout title="QR code — LÜM Lille Centre" noindex>
+  <main class="page">
+    <h1>Le QR code</h1>
+    <p class="cible">Il renvoie vers {lisible}</p>
+
+    <div class="cadre">
+      <div class="qr" set:html={apercu} />
+    </div>
+
+    <a class="bouton" href={FICHIER} download="lum-carte-qr.svg">
+      Télécharger en SVG <span class="arrow">↓</span>
+    </a>
+
+    <p class="note">
+      Format vectoriel : il reste net à n'importe quelle taille, d'un sticker à
+      une affiche. La zone de silence est incluse dans le fichier.
+    </p>
+
+    <p class="retour">
+      <a href="/carte/qr">Voir l'affiche A4 prête à imprimer</a>
+    </p>
+  </main>
+</BaseLayout>
+
+<style>
+  .page {
+    min-height: 100vh;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 56px var(--gutter) 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: var(--cream);
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 7vw, 3.4rem);
+  }
+
+  .cible {
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+  }
+
+  .cadre {
+    margin: 34px 0;
+    padding: 26px;
+    border-radius: var(--radius-lg);
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+
+  .qr :global(svg) {
+    display: block;
+    width: 232px;
+    height: 232px;
+  }
+
+  /* Bouton plein, comme celui de la bannière d'avis : c'est l'action
+     principale de la page. */
+  .bouton {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 32px;
+    border-radius: 999px;
+    background: var(--cream);
+    color: var(--blue);
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+
+  .bouton:hover,
+  .bouton:focus-visible {
+    transform: translateY(-2px);
+  }
+
+  .bouton .arrow {
+    transition: transform 0.2s;
+  }
+
+  .bouton:hover .arrow {
+    transform: translateY(3px);
+  }
+
+  .note {
+    max-width: 44ch;
+    margin-top: 22px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    opacity: 0.75;
+    text-wrap: balance;
+  }
+
+  .retour {
+    margin-top: 30px;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .retour a {
+    border-bottom: 2px solid rgba(249, 241, 230, 0.45);
+    padding-bottom: 1px;
+    transition: border-color 0.2s;
+  }
+
+  .retour a:hover,
+  .retour a:focus-visible {
+    border-bottom-color: var(--cream);
+  }
+</style>

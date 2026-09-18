@@ -22,10 +22,16 @@ npm run build    # génère le site statique dans dist/
 npm run preview  # prévisualise le build
 ```
 
-## Affiche QR
+## QR code et affiche
 
-La page `/carte/qr` est une affiche A4 destinée au comptoir, avec un QR vers
-la carte. Le PDF téléchargeable depuis cette page vit dans
+Deux pages de service, sans indexation ni présence au sitemap :
+
+- `/qr-code` : le QR seul, téléchargeable en SVG. Le fichier est produit par
+  la route `src/pages/qr-code.svg.ts`, donc régénéré à chaque build.
+- `/carte/qr` : une affiche A4 destinée au comptoir, avec ce même QR.
+
+Les deux partagent `src/lib/qr.ts`. Le QR de la page porte une zone de
+silence de 4 modules, celui de l'affiche la reçoit du calage CSS. Le PDF téléchargeable depuis cette page vit dans
 `public/affiche-carte-lum.pdf` et n'est pas régénéré automatiquement :
 
 ```bash
