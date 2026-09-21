@@ -80,6 +80,15 @@ const donneesStructurees = {
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <title>{title}</title>
     <script type="application/ld+json" set:html={JSON.stringify(donneesStructurees)} />
+
+    {/* Mesure d'audience Cloudflare : sans cookie, donc pas de bandeau de
+        consentement à afficher. `is:inline` laisse la balise intacte, les
+        attributs du beacon devant parvenir tels quels au navigateur. */}
+    <script
+      is:inline
+      type="module"
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "1499722904844b059bb5307b5585893e"}'></script>
   </head>
   <body>
     <slot />
