@@ -49,13 +49,13 @@ export const rubriques: Rubrique[] = [
     titreEn: 'Salads',
     articles: [
       {
-        nom: 'Fêta’stick',
-        nomEn: 'Fêta’stick',
+        nom: 'Feta’stick',
+        nomEn: 'Feta’stick',
         prix: '7,90 €',
         description:
-          'Salade verte, lentilles, courgettes grillées, oignons rouges / noix, fêta menthe, vinaigrette myrtille.',
+          'Salade verte, lentilles, courgettes grillées, oignons rouges et noix, feta menthe, vinaigrette myrtille.',
         descriptionEn:
-          'Green salad, lentils, grilled courgettes, red onions / walnuts, mint feta, blueberry vinaigrette.',
+          'Green salad, lentils, grilled courgettes, red onions and walnuts, mint feta, blueberry vinaigrette.',
       },
       {
         nom: 'Poke Saumon',
