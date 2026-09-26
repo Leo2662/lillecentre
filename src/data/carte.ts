@@ -27,18 +27,20 @@ export const rubriques: Rubrique[] = [
     titreEn: 'Focaccias (homemade)',
     articles: [
       {
-        nom: 'Coronation Chicken',
-        nomEn: 'Coronation Chicken',
+        nom: 'Thon Croquant',
+        nomEn: 'Crunchy Tuna',
         prix: '8,90 €',
-        description: 'Poulet effiloché, chutney de mangues, épices.',
-        descriptionEn: 'Pulled chicken, mango chutney, spices.',
+        description:
+          'Mayo végétale, thon, cornichons, ciboulette, mozza râpée, carotte râpée, salade verte.',
+        descriptionEn:
+          'Plant-based mayo, tuna, gherkins, chives, grated mozzarella, grated carrot, lettuce.',
       },
       {
-        nom: 'Feta Garden',
-        nomEn: 'Feta Garden',
+        nom: "Crème d'Œuf",
+        nomEn: 'Creamy Egg',
         prix: '8,90 €',
-        description: 'Crème de feta, coleslaw.',
-        descriptionEn: 'Feta cream, coleslaw.',
+        description: "Crème d'œuf, ciboulette, oignons rouges, salade verte.",
+        descriptionEn: 'Creamy egg spread, chives, red onions, lettuce.',
       },
     ],
   },
