@@ -45,26 +45,26 @@ export const rubriques: Rubrique[] = [
     ],
   },
   {
-    titre: 'Salades de Pâtes',
-    titreEn: 'Pasta Salads',
+    titre: 'Salades',
+    titreEn: 'Salads',
     articles: [
       {
-        nom: 'La Végétarienne',
-        nomEn: 'The Vegetarian',
+        nom: 'Fêta’stick',
+        nomEn: 'Fêta’stick',
         prix: '7,90 €',
         description:
-          'Pâtes, féta, légumes verts (courgettes, petits pois) et herbes fraîches.',
+          'Salade verte, lentilles, courgettes grillées, oignons rouges / noix, fêta menthe, vinaigrette myrtille.',
         descriptionEn:
-          'Pasta, feta, green vegetables (courgette, peas) and fresh herbs.',
+          'Green salad, lentils, grilled courgettes, red onions / walnuts, mint feta, blueberry vinaigrette.',
       },
       {
-        nom: 'Au Poulet',
-        nomEn: 'With Chicken',
+        nom: 'Poke Saumon',
+        nomEn: 'Salmon Poke',
         prix: '7,90 €',
         description:
-          'Pâtes, poulet, légumes verts (courgettes, petits pois) et herbes fraîches.',
+          'Riz, saumon, chou vinaigré, avocat, crème végétale, sauce beurre de cacahuètes, miel, sauce soja.',
         descriptionEn:
-          'Pasta, chicken, green vegetables (courgette, peas) and fresh herbs.',
+          'Rice, salmon, pickled cabbage, avocado, plant-based cream, peanut butter sauce, honey, soy sauce.',
       },
     ],
   },
