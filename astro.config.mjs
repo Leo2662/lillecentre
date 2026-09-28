@@ -11,7 +11,7 @@ export default defineConfig({
   // Pages de service (QR, affiche) : hors sitemap.
   integrations: [
     sitemap({
-      filter: (page) => !['/carte/qr', '/qr-code'].some((p) => page.includes(p)),
+      filter: (page) => !['/carte/qr', '/qr-code', '/llms.txt'].some((p) => page.includes(p)),
     }),
   ],
 });

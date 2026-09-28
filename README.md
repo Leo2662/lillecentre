@@ -42,6 +42,16 @@ npm run build && npm run affiche   # réécrit le PDF depuis la page construite
 À relancer après toute modification de l'affiche ou du domaine, sinon le PDF
 téléchargé diverge de la page.
 
+## Données de l'établissement
+
+`src/lib/etablissement.ts` centralise adresse, horaires, téléphone et
+réseaux. Les données structurées du layout et `llms.txt` y puisent toutes
+deux, pour qu'un changement d'horaire ne soit à faire qu'à un endroit.
+
+`/llms.txt` est un résumé du site en texte simple, à destination des
+modèles de langage. Il est généré depuis `src/data/carte.ts` et le fichier
+ci-dessus, donc à jour à chaque build sans intervention.
+
 ## Direction artistique
 
 Reprise du visuel « Une foccacia ? » :

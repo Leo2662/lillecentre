@@ -4,6 +4,7 @@ import '@fontsource/anton';
 import '@fontsource-variable/nunito';
 import '@fontsource/caveat/600.css';
 import '../styles/global.css';
+import { ETABLISSEMENT } from '../lib/etablissement';
 
 interface Props {
   title?: string;
@@ -29,16 +30,16 @@ const donneesStructurees = {
   '@context': 'https://schema.org',
   '@type': 'CafeOrCoffeeShop',
   '@id': new URL('#etablissement', Astro.site).href,
-  name: 'LÜM Lille Centre',
-  description: "Coffee shop et vente à emporter au 64 rue du Molinel, à Lille.",
+  name: ETABLISSEMENT.nom,
+  description: ETABLISSEMENT.description,
   url: Astro.site.href,
-  telephone: '+33642996242',
+  telephone: ETABLISSEMENT.telephone,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '64 rue du Molinel',
-    postalCode: '59800',
-    addressLocality: 'Lille',
-    addressCountry: 'FR',
+    streetAddress: ETABLISSEMENT.adresse.rue,
+    postalCode: ETABLISSEMENT.adresse.codePostal,
+    addressLocality: ETABLISSEMENT.adresse.ville,
+    addressCountry: ETABLISSEMENT.adresse.pays,
   },
   openingHoursSpecification: {
     '@type': 'OpeningHoursSpecification',
@@ -51,21 +52,18 @@ const donneesStructurees = {
       'Saturday',
       'Sunday',
     ],
-    opens: '09:00',
-    closes: '18:00',
+    opens: ETABLISSEMENT.horaires.ouverture,
+    closes: ETABLISSEMENT.horaires.fermeture,
   },
   geo: {
     '@type': 'GeoCoordinates',
-    latitude: 50.634337,
-    longitude: 3.067457,
+    latitude: ETABLISSEMENT.geo.latitude,
+    longitude: ETABLISSEMENT.geo.longitude,
   },
   servesCuisine: 'Café',
   priceRange: '€',
   hasMenu: new URL('carte/', Astro.site).href,
-  sameAs: [
-    'https://www.instagram.com/lum_lille',
-    'https://www.tiktok.com/@lum_vieuxlille',
-  ],
+  sameAs: [...ETABLISSEMENT.reseaux],
 };
 ---
 
