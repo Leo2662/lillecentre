@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BanniereAvis from '../components/BanniereAvis.astro';
+import { horairesEnLigne } from '../lib/etablissement';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -76,7 +77,7 @@ const liens = [
             <path d="M12 7v5.2l3.4 2" />
           </g>
         </svg>
-        Tous les jours, 9h – 18h
+        {horairesEnLigne()}
       </p>
 
       <a class="lum-pill-btn" href={`${base}/carte`}>

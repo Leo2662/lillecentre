@@ -1,6 +1,10 @@
 import type { APIRoute } from 'astro';
 import { rubriques } from '../data/carte';
-import { ETABLISSEMENT, adresseEnLigne } from '../lib/etablissement';
+import {
+  ETABLISSEMENT,
+  adresseEnLigne,
+  horairesEnLigne,
+} from '../lib/etablissement';
 
 // llms.txt : un résumé du site en texte simple, à destination des modèles
 // de langage qui répondent aux questions du type « un coffee shop à Lille ».
@@ -8,7 +12,7 @@ import { ETABLISSEMENT, adresseEnLigne } from '../lib/etablissement';
 // quand la carte change.
 export const GET: APIRoute = async ({ site }) => {
   const racine = site!.href.replace(/\/$/, '');
-  const { adresse, horaires, geo } = ETABLISSEMENT;
+  const { geo } = ETABLISSEMENT;
 
   // L'espace insécable sert la typographie à l'écran, pas la lecture machine.
   const prix = (p: string) => p.replace(/ /g, ' ');
@@ -32,7 +36,7 @@ export const GET: APIRoute = async ({ site }) => {
 - Adresse : ${adresseEnLigne()}, France
 - Coordonnées : ${geo.latitude}, ${geo.longitude}
 - Téléphone : ${ETABLISSEMENT.telephone}
-- Horaires : tous les jours, ${horaires.ouverture}–${horaires.fermeture}
+- Horaires : ${horairesEnLigne().toLowerCase()}
 - Site : ${racine}/
 - Carte : ${racine}/carte
 - Instagram : ${ETABLISSEMENT.reseaux[0]}

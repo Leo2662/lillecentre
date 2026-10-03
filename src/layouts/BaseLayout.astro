@@ -4,7 +4,7 @@ import '@fontsource/anton';
 import '@fontsource-variable/nunito';
 import '@fontsource/caveat/600.css';
 import '../styles/global.css';
-import { ETABLISSEMENT } from '../lib/etablissement';
+import { ETABLISSEMENT, joursSchema } from '../lib/etablissement';
 
 interface Props {
   title?: string;
@@ -43,15 +43,7 @@ const donneesStructurees = {
   },
   openingHoursSpecification: {
     '@type': 'OpeningHoursSpecification',
-    dayOfWeek: [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
-    ],
+    dayOfWeek: joursSchema(),
     opens: ETABLISSEMENT.horaires.ouverture,
     closes: ETABLISSEMENT.horaires.fermeture,
   },
