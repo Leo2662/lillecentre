@@ -4,7 +4,7 @@ import '@fontsource/anton';
 import '@fontsource-variable/nunito';
 import '@fontsource/caveat/600.css';
 import '../styles/global.css';
-import { ETABLISSEMENT, joursSchema } from '../lib/etablissement';
+import { ETABLISSEMENT, congesAAnnoncer, joursSchema } from '../lib/etablissement';
 
 interface Props {
   title?: string;
@@ -21,6 +21,8 @@ const {
   description = 'Coffee & Lunch to go — LÜM Lille Centre, 64 rue du Molinel',
   noindex = false,
 } = Astro.props;
+
+const conges = congesAAnnoncer();
 
 // Données structurées de l'établissement, pour les moteurs de recherche.
 // Les URL dérivent de `site` (astro.config.mjs) afin de rester cohérentes.
@@ -47,6 +49,16 @@ const donneesStructurees = {
     opens: ETABLISSEMENT.horaires.ouverture,
     closes: ETABLISSEMENT.horaires.fermeture,
   },
+  // Fermé toute la journée : ouverture et fermeture à 00:00, sur la période.
+  ...(conges && {
+    specialOpeningHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      opens: '00:00',
+      closes: '00:00',
+      validFrom: conges.debut,
+      validThrough: conges.fin,
+    },
+  }),
   geo: {
     '@type': 'GeoCoordinates',
     latitude: ETABLISSEMENT.geo.latitude,

@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Entete from '../components/Entete.astro';
 import Bilingue from '../components/Bilingue.astro';
+import BandeauConges from '../components/BandeauConges.astro';
 import { rubriques } from '../data/carte';
 ---
 
@@ -60,6 +61,8 @@ import { rubriques } from '../data/carte';
       <button type="button" class="langue" data-langue="fr" aria-pressed="true">FR</button>
       <button type="button" class="langue" data-langue="en" aria-pressed="false">EN</button>
     </div>
+
+    <BandeauConges />
 
     <div class="rubriques">
       {

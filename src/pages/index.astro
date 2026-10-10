@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BanniereAvis from '../components/BanniereAvis.astro';
+import BandeauConges from '../components/BandeauConges.astro';
 import { horairesEnLigne } from '../lib/etablissement';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -34,6 +35,8 @@ const liens = [
 
 <BaseLayout>
   <main class="stage">
+    <BandeauConges />
+
     <section class="panel">
       <div class="chip">
         <h1>Healthy and Gourmand</h1>
@@ -133,6 +136,12 @@ const liens = [
     align-items: center;
     justify-content: center;
     gap: 28px;
+  }
+
+  /* Le cartouche du titre déborde au-dessus du panneau : un peu d'air en
+     plus pour qu'il ne frôle pas le bandeau des congés. */
+  .stage :global(.conges) {
+    margin-bottom: 14px;
   }
 
   .panel {

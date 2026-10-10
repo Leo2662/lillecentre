@@ -3,6 +3,7 @@ import { rubriques } from '../data/carte';
 import {
   ETABLISSEMENT,
   adresseEnLigne,
+  congesAAnnoncer,
   horairesEnLigne,
 } from '../lib/etablissement';
 
@@ -13,6 +14,10 @@ import {
 export const GET: APIRoute = async ({ site }) => {
   const racine = site!.href.replace(/\/$/, '');
   const { geo } = ETABLISSEMENT;
+  const conges = congesAAnnoncer();
+  const fermeture = conges
+    ? `\n- Fermeture pour congés : du ${conges.debut} au ${conges.fin} inclus, réouverture le ${conges.reouverture}`
+    : '';
 
   // L'espace insécable sert la typographie à l'écran, pas la lecture machine.
   const prix = (p: string) => p.replace(/ /g, ' ');
@@ -36,7 +41,7 @@ export const GET: APIRoute = async ({ site }) => {
 - Adresse : ${adresseEnLigne()}, France
 - Coordonnées : ${geo.latitude}, ${geo.longitude}
 - Téléphone : ${ETABLISSEMENT.telephone}
-- Horaires : ${horairesEnLigne().toLowerCase()}
+- Horaires : ${horairesEnLigne().toLowerCase()}${fermeture}
 - Site : ${racine}/
 - Carte : ${racine}/carte
 - Instagram : ${ETABLISSEMENT.reseaux[0]}

@@ -48,6 +48,12 @@ téléchargé diverge de la page.
 réseaux. Les données structurées du layout et `llms.txt` y puisent toutes
 deux, pour qu'un changement d'horaire ne soit à faire qu'à un endroit.
 
+Les congés s'y déclarent aussi, dans `conges` (premier et dernier jour
+fermés). Un bandeau les annonce alors sur l'accueil et sur la carte, avec le
+jour de réouverture déduit des horaires, et les données structurées comme
+`llms.txt` les mentionnent. Le bandeau disparaît de lui-même le jour de la
+réouverture ; remettre ensuite `conges` à `null` ne fait que ranger.
+
 `/llms.txt` est un résumé du site en texte simple, à destination des
 modèles de langage. Il est généré depuis `src/data/carte.ts` et le fichier
 ci-dessus, donc à jour à chaque build sans intervention.
