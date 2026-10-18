@@ -28,9 +28,12 @@ export const rubriques: Rubrique[] = [
     titre: 'Tartes Salées du Jour',
     titreEn: 'Savoury Tarts of the Day',
     articles: [
-      { nom: 'Végétarienne', nomEn: 'Vegetarian', prix: '7,50 €' },
-      { nom: 'Carnée', nomEn: 'Meat', prix: '7,90 €' },
-      { nom: 'Sans Gluten', nomEn: 'Gluten-Free', prix: '8,50 €' },
+      {
+        nom: 'Au choix',
+        nomEn: 'Tart of your choice',
+        prix: '6,90 €',
+        aPartirDe: true,
+      },
     ],
   },
   {
@@ -57,6 +60,11 @@ export const rubriques: Rubrique[] = [
         prix: '4,50 €',
       },
       {
+        nom: 'Cookie Noix de Pécan Caramel',
+        nomEn: 'Caramel Pecan Cookie',
+        prix: '3,00 €',
+      },
+      {
         nom: 'Cookie Peanut Butter (vegan)',
         nomEn: 'Peanut Butter Cookie (vegan)',
         prix: '4,00 €',
@@ -79,6 +87,11 @@ export const rubriques: Rubrique[] = [
       { nom: 'Eau plate 50 cl', nomEn: 'Still Water 50 cl', prix: '1,90 €' },
       { nom: 'Eau pétillante 50 cl', nomEn: 'Sparkling Water 50 cl', prix: '2,50 €' },
       { nom: 'Citronnade Maison', nomEn: 'Homemade Lemonade', prix: '3,90 €' },
+      {
+        nom: 'Limonade Bio Pêche Abricot',
+        nomEn: 'Organic Peach Apricot Lemonade',
+        prix: '4,90 €',
+      },
       {
         nom: "Jus d'Orange Pressé",
         nomEn: 'Freshly Squeezed Orange Juice',
