@@ -44,7 +44,9 @@ const liens = [
 
       <p class="script">On va lümer ?</p>
 
-      <svg class="cup" viewBox="0 0 120 110" role="img" aria-label="Tasse de café">
+      {/* Pomme de terre au four, fumante : le plat phare, dessiné au trait
+          comme les illustrations de l'affiche. */}
+      <svg class="illustration" viewBox="0 0 120 110" role="img" aria-label="Pomme de terre">
         <g
           fill="none"
           stroke="currentColor"
@@ -52,12 +54,14 @@ const liens = [
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <path d="M18 34h68v34a26 26 0 0 1-26 26H44a26 26 0 0 1-26-26V34Z" />
-          <path d="M86 44h10a14 14 0 0 1 0 28h-10" />
-          <path d="M22 40h60" />
-          <path d="M38 22c0-6 6-8 6-14" />
-          <path d="M54 22c0-6 6-8 6-14" />
-          <path d="M70 22c0-6 6-8 6-14" />
+          <path d="M15 68c-3-15 8-27 24-28 9-.5 13-5 22-7 6-1.5 11-1.5 17-1 17 1 29 13 27 30-2 17-17 29-40 30-11 .5-19-1-27-4-13-4-21-11-23-20Z" />
+          {/* Les « yeux » sont semés de biais : alignés, ils dessinaient un visage. */}
+          <path d="M32 60h.01 M71 46h.01 M55 79h.01 M91 67h.01" />
+          <path d="M44 72c1.4 1.2 3.4 1.4 5 .6" />
+          <path d="M84 52c.2 1.8 1.4 3.2 3 3.8" />
+          <path d="M46 25c0-6 6-8 6-14" />
+          <path d="M62 23c0-6 6-8 6-14" />
+          <path d="M78 25c0-6 6-8 6-14" />
         </g>
       </svg>
 
@@ -181,7 +185,7 @@ const liens = [
     line-height: 1.2;
   }
 
-  .cup {
+  .illustration {
     display: block;
     width: 150px;
     margin: 28px auto 24px;

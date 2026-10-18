@@ -8,7 +8,7 @@ import { rubriques } from '../data/carte';
 
 <BaseLayout
   title="La carte — LÜM"
-  description="Focaccias, pâtisseries, boissons et café de spécialité à emporter chez LÜM."
+  description="Tartes salées du jour, pommes de terre garnies, pâtisseries, boissons et café de spécialité à emporter chez LÜM."
 >
   <script is:inline>
     // Service du matin : de 8h00 à 11h45, la rubrique Barista passe en tête.
@@ -82,7 +82,10 @@ import { rubriques } from '../data/carte';
                     <Bilingue fr={article.nom} en={article.nomEn} />
                   </span>
                   <span class="article__filet" aria-hidden="true" />
-                  <span class="article__prix">{article.prix}</span>
+                  <span class="article__prix">
+                    {article.aPartirDe && <><Bilingue fr="dès" en="from" />{'\u00a0'}</>}
+                    {article.prix}
+                  </span>
                 </div>
                 {
                   article.description && (

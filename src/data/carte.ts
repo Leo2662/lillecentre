@@ -11,6 +11,8 @@ export interface Article {
   prix: string;
   description?: string;
   descriptionEn?: string;
+  // Prix plancher, selon la garniture : affiché « dès 7,90 € ».
+  aPartirDe?: boolean;
 }
 
 export interface Rubrique {
@@ -23,61 +25,24 @@ export interface Rubrique {
 
 export const rubriques: Rubrique[] = [
   {
-    titre: 'Focaccias (faites maison)',
-    titreEn: 'Focaccias (homemade)',
+    titre: 'Tartes Salées du Jour',
+    titreEn: 'Savoury Tarts of the Day',
     articles: [
-      {
-        nom: 'Thon Croquant',
-        nomEn: 'Crunchy Tuna',
-        prix: '8,90 €',
-        description:
-          'Mayo végétale, thon, cornichons, ciboulette, mozza râpée, carotte râpée, salade verte.',
-        descriptionEn:
-          'Plant-based mayo, tuna, gherkins, chives, grated mozzarella, grated carrot, lettuce.',
-      },
-      {
-        nom: "Crème d'Œuf",
-        nomEn: 'Creamy Egg',
-        prix: '8,90 €',
-        description: "Crème d'œuf, ciboulette, oignons rouges, salade verte.",
-        descriptionEn: 'Creamy egg spread, chives, red onions, lettuce.',
-      },
+      { nom: 'Végétarienne', nomEn: 'Vegetarian', prix: '7,50 €' },
+      { nom: 'Carnée', nomEn: 'Meat', prix: '7,90 €' },
+      { nom: 'Sans Gluten', nomEn: 'Gluten-Free', prix: '8,50 €' },
     ],
   },
   {
-    titre: 'Salades',
-    titreEn: 'Salads',
+    titre: 'Pommes de Terre Garnies',
+    titreEn: 'Loaded Potatoes',
     articles: [
       {
-        nom: 'Feta’stick',
-        nomEn: 'Feta’stick',
+        nom: 'Au choix',
+        nomEn: 'Filling of your choice',
         prix: '7,90 €',
-        description:
-          'Salade verte, lentilles, courgettes grillées, oignons rouges et noix, feta menthe, vinaigrette myrtille.',
-        descriptionEn:
-          'Green salad, lentils, grilled courgettes, red onions and walnuts, mint feta, blueberry vinaigrette.',
+        aPartirDe: true,
       },
-      {
-        nom: 'Poke Saumon',
-        nomEn: 'Salmon Poke',
-        prix: '7,90 €',
-        description:
-          'Riz, saumon, chou vinaigré, avocat, crème végétale, sauce beurre de cacahuètes, miel, sauce soja.',
-        descriptionEn:
-          'Rice, salmon, pickled cabbage, avocado, plant-based cream, peanut butter sauce, honey, soy sauce.',
-      },
-    ],
-  },
-  {
-    titre: 'Tartes Salées',
-    titreEn: 'Savoury Tarts',
-    articles: [
-      {
-        nom: 'Poivrons & Chèvre (Végétarienne)',
-        nomEn: "Peppers & Goat's Cheese (Vegetarian)",
-        prix: '6,90 €',
-      },
-      { nom: 'Chorizo & Cheddar', nomEn: 'Chorizo & Cheddar', prix: '6,90 €' },
     ],
   },
   {

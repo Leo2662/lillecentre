@@ -38,7 +38,7 @@ export const ETABLISSEMENT = {
   // Les jours sont donnés par leurs indices dans la semaine, bornes incluses :
   // le libellé français et la liste attendue par schema.org en découlent tous
   // deux, et ne peuvent donc pas se contredire.
-  horaires: { premierJour: 1, dernierJour: 5, ouverture: '10:00', fermeture: '15:00' },
+  horaires: { premierJour: 0, dernierJour: 4, ouverture: '10:00', fermeture: '15:00' },
   // Fermeture pour congés, bornes incluses (AAAA-MM-JJ), ou `null` s'il n'y
   // en a pas. Le bandeau, les données structurées et llms.txt en découlent.
   // Le bandeau s'efface de lui-même le jour de la réouverture ; les deux

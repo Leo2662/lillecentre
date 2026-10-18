@@ -26,7 +26,8 @@ export const GET: APIRoute = async ({ site }) => {
     .map((r) => {
       const lignes = r.articles.map((a) => {
         const detail = a.description ? ` — ${a.description}` : '';
-        return `- ${a.nom} : ${prix(a.prix)}${detail}`;
+        const plancher = a.aPartirDe ? 'à partir de ' : '';
+        return `- ${a.nom} : ${plancher}${prix(a.prix)}${detail}`;
       });
       return `### ${r.titre}\n\n${lignes.join('\n')}`;
     })
@@ -34,7 +35,7 @@ export const GET: APIRoute = async ({ site }) => {
 
   const texte = `# ${ETABLISSEMENT.nom}
 
-> ${ETABLISSEMENT.accroche}. ${ETABLISSEMENT.description} Focaccias faites maison, salades, tartes salées, pâtisseries et café de spécialité, à emporter.
+> ${ETABLISSEMENT.accroche}. ${ETABLISSEMENT.description} Tartes salées du jour, pommes de terre garnies, pâtisseries et café de spécialité, à emporter.
 
 ## Informations pratiques
 
