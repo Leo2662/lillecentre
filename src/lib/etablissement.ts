@@ -43,7 +43,7 @@ export const ETABLISSEMENT = {
   // en a pas. Le bandeau, les données structurées et llms.txt en découlent.
   // Le bandeau s'efface de lui-même le jour de la réouverture ; les deux
   // autres, au premier déploiement qui suit.
-  conges: { debut: '2026-10-13', fin: '2026-10-17' } as { debut: string; fin: string } | null,
+  conges: null as { debut: string; fin: string } | null,
   reseaux: [
     'https://www.instagram.com/lum_lille',
     'https://www.tiktok.com/@lum_vieuxlille',
