@@ -26,7 +26,7 @@ const JOURS_SCHEMA = [
 export const ETABLISSEMENT = {
   nom: 'LÜM Lille Centre',
   description: 'Coffee shop et vente à emporter au 64 rue du Molinel, à Lille.',
-  accroche: 'Coffee & Lunch to go',
+  accroche: 'Repas à emporter',
   telephone: '+33642996242',
   adresse: {
     rue: '64 rue du Molinel',

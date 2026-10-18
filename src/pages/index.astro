@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BanniereAvis from '../components/BanniereAvis.astro';
 import BandeauConges from '../components/BandeauConges.astro';
-import { horairesEnLigne } from '../lib/etablissement';
+import { ETABLISSEMENT, horairesEnLigne } from '../lib/etablissement';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -39,7 +39,7 @@ const liens = [
 
     <section class="panel">
       <div class="chip">
-        <h1>Healthy and Gourmand</h1>
+        <h1>Repas Gourmand</h1>
       </div>
 
       <p class="script">On va lümer ?</p>
@@ -65,7 +65,7 @@ const liens = [
         </g>
       </svg>
 
-      <p class="lede">Coffee &amp; Lunch to go</p>
+      <p class="lede">{ETABLISSEMENT.accroche}</p>
 
       <p class="adresse">
         <svg viewBox="0 0 24 24" aria-hidden="true">
