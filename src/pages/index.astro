@@ -6,6 +6,11 @@ import { ETABLISSEMENT, horairesEnLigne } from '../lib/etablissement';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
+// « Sources préférées » de Google : le lien ouvre l'outil sur notre domaine,
+// où le visiteur n'a plus qu'à cocher LÜM. Un simple lien plutôt que le
+// bouton officiel, qui chargerait un script Google sur la page.
+const sourcePreferee = `https://www.google.com/preferences/source?q=${Astro.site!.hostname}`;
+
 const liens = [
   {
     nom: 'Instagram',
@@ -127,6 +132,12 @@ const liens = [
           ))
         }
       </div>
+
+      <p class="source-google">
+        <a href={sourcePreferee} target="_blank" rel="noopener noreferrer">
+          Ajouter LÜM à vos sources préférées sur Google <span class="arrow">→</span>
+        </a>
+      </p>
     </footer>
   </main>
 </BaseLayout>
@@ -295,6 +306,13 @@ const liens = [
 
   .pied p a:hover .arrow {
     transform: translateX(3px);
+  }
+
+  /* Discret : une invitation, pas un appel à l'action. */
+  .source-google {
+    margin-top: 14px;
+    font-size: 0.82rem;
+    opacity: 0.85;
   }
 
   @keyframes fade-up {
