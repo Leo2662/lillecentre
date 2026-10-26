@@ -4,6 +4,17 @@ import Entete from '../components/Entete.astro';
 import Bilingue from '../components/Bilingue.astro';
 import BandeauConges from '../components/BandeauConges.astro';
 import { rubriques } from '../data/carte';
+
+// Dans chaque rubrique, les articles les plus chers passent en tête. Le tri
+// se fait ici, pas dans les données : un article ajouté n'importe où dans
+// src/data/carte.ts prend de lui-même sa place. À prix égal, l'ordre des
+// données est conservé.
+const montant = (prix: string) => Number.parseFloat(prix.replace(',', '.'));
+const parPrixDecroissant = <T extends { prix: string }>(articles: T[]) =>
+  [...articles].sort((a, b) => montant(b.prix) - montant(a.prix));
+
+// Prix affichés sans le symbole € : la note en bas de carte précise la devise.
+const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
 ---
 
 <BaseLayout
@@ -74,8 +85,11 @@ import { rubriques } from '../data/carte';
             </h2>
           </div>
 
-          <ul class={rubrique.articles.length > 8 ? 'articles articles--deux' : 'articles'}>
-            {rubrique.articles.map((article) => (
+          <ul
+            class={rubrique.articles.length > 8 ? 'articles articles--deux' : 'articles'}
+            style={`--lignes: ${Math.ceil(rubrique.articles.length / 2)}`}
+          >
+            {parPrixDecroissant(rubrique.articles).map((article) => (
               <li class="article">
                 <div class="article__ligne">
                   <span class="article__nom">
@@ -84,7 +98,7 @@ import { rubriques } from '../data/carte';
                   <span class="article__filet" aria-hidden="true" />
                   <span class="article__prix">
                     {article.aPartirDe && <><Bilingue fr="dès" en="from" />{'\u00a0'}</>}
-                    {article.prix}
+                    {sansDevise(article.prix)}
                   </span>
                 </div>
                 {
@@ -210,9 +224,13 @@ import { rubriques } from '../data/carte';
     gap: 20px 46px;
   }
 
+  /* Deux colonnes remplies l'une après l'autre, comme une carte imprimée :
+     lue de haut en bas, chaque colonne reste triée par prix décroissant. */
   .articles--deux {
     max-width: none;
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(var(--lignes), auto);
+    grid-auto-flow: column;
   }
 
   .article__ligne {
@@ -262,6 +280,8 @@ import { rubriques } from '../data/carte';
 
     .articles--deux {
       grid-template-columns: 1fr;
+      grid-template-rows: none;
+      grid-auto-flow: row;
     }
   }
 </style>
