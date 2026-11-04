@@ -85,6 +85,30 @@ emporter », « tartes salées maison » et « pommes de terre garnies ».
   le PDF de l'affiche et le QR en SVG sont écartés.
 - **`/404`** : page servie par GitHub Pages pour toute adresse inconnue.
 
+## Photos
+
+Les originaux sont rangés dans `photos/`, qui n'est pas publié, et décrits
+dans `src/data/photos.ts` : nom des fichiers publiés, dimensions, texte
+alternatif, légende et rubrique de la carte illustrée.
+
+```bash
+npm run photos             # génère les fichiers absents ou plus anciens que l'original
+npm run photos -- --tout   # régénère tout, après un changement de réglage
+```
+
+Le script écrit dans `public/images/` une version AVIF et une version WebP
+de chaque photo, de 400 à 1200 px de large par paliers de 200 (jamais plus
+large que l'original), sans métadonnées et en sRGB. La page les sert dans un
+`<picture>` : le navigateur choisit le format et la largeur adaptés à
+l'écran. Le WebP le plus large est celui que citent l'attribut `src`, les
+données structurées (ImageObject, relié à l'établissement et à l'article de
+la carte) et le sitemap.
+
+Pour ajouter une photo : déposer l'original dans `photos/`, la déclarer dans
+`src/data/photos.ts`, lancer `npm run photos`, puis commiter les fichiers
+produits. Une photo déclarée sans ses fichiers est écartée du site, avec un
+avertissement au build, plutôt que de s'afficher cassée.
+
 ## Images de partage et icônes
 
 ```bash
@@ -120,8 +144,12 @@ illustrations au trait.
 ## Structure
 
 ```
+photos/                        # originaux des photos (non publiés)
+public/images/                 # photos publiées, produites par `npm run photos`
 src/
+├── components/Photo.astro     # une photo : <picture>, srcset, légende
 ├── data/carte.ts              # la carte : rubriques, articles, prix
+├── data/photos.ts             # les photos : fichiers, texte alternatif, légende
 ├── layouts/BaseLayout.astro   # <head> (SEO, partage), polices, réglages partagés
 ├── lib/
 │   ├── etablissement.ts       # adresse, horaires, téléphone, fiche Google

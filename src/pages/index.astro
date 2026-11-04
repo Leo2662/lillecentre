@@ -9,9 +9,19 @@ import {
   lienItineraire,
   telephoneEnLettres,
 } from '../lib/etablissement';
-import { ancre, prixPlancherEnLettres, vedettes } from '../data/carte';
+import { ancre, prixPlancherEnLettres, rubriques, vedettes } from '../data/carte';
+import Photo from '../components/Photo.astro';
+import { photosPubliees } from '../data/photos';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Section des pommes de terre garnies : ses photos, et le lien vers leur
+// rubrique sur la carte (ou vers la carte, si la rubrique change de nom).
+const POMMES_DE_TERRE = 'pommes-de-terre-garnies';
+const photosPommesDeTerre = photosPubliees().filter((p) => p.rubrique === POMMES_DE_TERRE);
+const lienPommesDeTerre = rubriques.some((r) => ancre(r) === POMMES_DE_TERRE)
+  ? `${base}/carte/#${POMMES_DE_TERRE}`
+  : `${base}/carte/`;
 
 // Titre et description du résultat Google. La requête visée ouvre le titre ;
 // la description nomme les plats en vedette : à revoir s'ils changent.
@@ -112,6 +122,35 @@ const liens = [
     </section>
 
     <BanniereAvis />
+
+    {
+      photosPommesDeTerre.length > 0 && (
+        <section class="panel panel--plats" aria-labelledby="titre-pommes-de-terre">
+          <div class="chip chip--section">
+            <h2 id="titre-pommes-de-terre">Nos pommes de terre garnies maison à Lille</h2>
+          </div>
+
+          <p class="intro">
+            De la cuisine maison, servie chaude et prête à emporter&nbsp;: nos pommes de terre
+            garnies font un déjeuner complet, à savourer au bureau ou au parc. La garniture se
+            choisit au comptoir.
+          </p>
+
+          {/* Une colonne de 360 px au plus par photo : d'où la valeur de sizes. */}
+          <div class="photos">
+            {photosPommesDeTerre.map((photo) => (
+              <Photo photo={photo} sizes="(max-width: 452px) calc(100vw - 92px), 360px" />
+            ))}
+          </div>
+
+          <p class="aussi">
+            <a href={lienPommesDeTerre}>
+              Voir les pommes de terre garnies sur la carte <span class="arrow" aria-hidden="true">→</span>
+            </a>
+          </p>
+        </section>
+      )
+    }
 
     <section class="panel panel--plats" aria-labelledby="titre-plats">
       <div class="chip chip--section">
@@ -311,6 +350,16 @@ const liens = [
 
   .chip--section h2 {
     font-size: clamp(1.3rem, 3.4vw, 1.9rem);
+    text-wrap: balance;
+  }
+
+  /* Une colonne de 360 px au plus par photo : seule, elle reste centrée ;
+     à deux, elles se partagent la largeur ; sur téléphone, tout s'empile. */
+  .photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 360px));
+    justify-content: center;
+    gap: 24px 18px;
   }
 
   .intro {

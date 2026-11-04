@@ -10,7 +10,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "affiche": "node scripts/generer-affiche.mjs",
-    "images": "node scripts/generer-images.mjs"
+    "images": "node scripts/generer-images.mjs",
+    "photos": "node scripts/generer-photos.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "playwright-core": "^1.63.0",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "sharp": "^0.35.4"
   }
 }

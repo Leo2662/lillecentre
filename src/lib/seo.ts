@@ -1,12 +1,13 @@
 // Référencement : images de partage et données structurées schema.org.
 //
 // Les données structurées forment un seul graphe JSON-LD dont les nœuds se
-// citent par leur @id : le site, l'établissement, la page et, sur la carte,
-// le menu détaillé. Ne renseigner ici que des informations vérifiées : ces
+// citent par leur @id : le site, l'établissement, ses photos, la page et,
+// sur la carte, le menu détaillé. Ne renseigner ici que des informations vérifiées : ces
 // champs alimentent les fiches des moteurs et les réponses des IA, une
 // valeur inventée y serait reprise telle quelle. Pas de note ni d'avis :
 // Google n'accepte pas les avis qu'un établissement publie sur lui-même.
 import { ancre, montant, rubriques, type Article, type Rubrique } from '../data/carte';
+import { photosPubliees, principale, type Photo } from '../data/photos';
 import { ETABLISSEMENT, congesAAnnoncer, joursSchema, lienFicheMaps } from './etablissement';
 
 /** Image de partage (Open Graph), produite par `npm run images`. */
@@ -34,7 +35,42 @@ const REGIMES: [RegExp, string][] = [
   [/végétarien/i, 'https://schema.org/VegetarianDiet'],
 ];
 
-function noeudArticle(rubrique: Rubrique, article: Article) {
+// --- Photos ---------------------------------------------------------------
+// Chaque photo publiée devient un nœud ImageObject du graphe, que citent
+// l'établissement (son image) et l'article de la carte qu'elle illustre.
+
+const idPhoto = (site: URL, photo: Photo) => new URL(`#photo-${photo.nom}`, site).href;
+
+// Schema.org veut une grandeur, pas un nombre nu : E37 est le code
+// UN/CEFACT du pixel.
+const enPixels = (valeur: number) => ({ '@type': 'QuantitativeValue', value: valeur, unitCode: 'E37' });
+
+function noeudPhoto(site: URL, photo: Photo) {
+  const reference = principale(photo);
+  const url = new URL(reference.chemin, site).href;
+  return {
+    '@type': 'ImageObject',
+    '@id': idPhoto(site, photo),
+    url,
+    contentUrl: url,
+    width: enPixels(reference.largeur),
+    height: enPixels(reference.hauteur),
+    encodingFormat: reference.type,
+    caption: photo.legende.replace(/\u00a0/g, ' '),
+    description: photo.alt,
+    inLanguage: 'fr-FR',
+  };
+}
+
+/** Références aux photos d'une rubrique de la carte. */
+const photosDe = (site: URL, rubrique: Rubrique) =>
+  photosPubliees()
+    .filter((p) => p.rubrique === ancre(rubrique))
+    .map((p) => ({ '@id': idPhoto(site, p) }));
+
+// --- Carte -----------------------------------------------------------------
+
+function noeudArticle(rubrique: Rubrique, article: Article, images: { '@id': string }[]) {
   const prix = montant(article.prix);
   const regimes = REGIMES.filter(([motif]) => motif.test(article.nom)).map(([, r]) => r);
   return {
@@ -42,6 +78,7 @@ function noeudArticle(rubrique: Rubrique, article: Article) {
     // « Au choix » ne dit rien hors de sa rubrique : on la rappelle.
     name: /^au choix$/i.test(article.nom) ? `${rubrique.titre} (au choix)` : article.nom,
     ...(article.description && { description: article.description }),
+    ...(images.length > 0 && { image: images }),
     ...(regimes.length > 0 && { suitableForDiet: regimes }),
     offers: {
       '@type': 'Offer',
@@ -74,7 +111,7 @@ export function noeudMenu(site: URL) {
       name: r.titre,
       ...(r.intro && { description: r.intro }),
       url: `${url}#${ancre(r)}`,
-      hasMenuItem: r.articles.map((a) => noeudArticle(r, a)),
+      hasMenuItem: r.articles.map((a) => noeudArticle(r, a, photosDe(site, r))),
     })),
   };
 }
@@ -95,6 +132,7 @@ export function grapheSchema(o: OptionsGraphe) {
   const idSite = new URL('#site', site).href;
   const idEtablissement = new URL('#etablissement', site).href;
   const conges = congesAAnnoncer();
+  const photos = photosPubliees();
 
   // Restaurant pour les repas à emporter, coffee shop pour le comptoir
   // barista : les deux types sont exacts, le premier prime.
@@ -105,7 +143,12 @@ export function grapheSchema(o: OptionsGraphe) {
     description: ETABLISSEMENT.description,
     url: site.href,
     telephone: ETABLISSEMENT.telephone,
-    image: new URL(IMAGE_PARTAGE.chemin, site).href,
+    // Les photos des plats d'abord : Google préfère de vraies photos de
+    // l'établissement à un visuel de marque.
+    image: [
+      ...photos.map((p) => ({ '@id': idPhoto(site, p) })),
+      new URL(IMAGE_PARTAGE.chemin, site).href,
+    ],
     logo: new URL(ICONE.chemin, site).href,
     address: {
       '@type': 'PostalAddress',
@@ -155,6 +198,7 @@ export function grapheSchema(o: OptionsGraphe) {
       publisher: { '@id': idEtablissement },
     },
     etablissement,
+    ...photos.map((p) => noeudPhoto(site, p)),
   ];
 
   if (o.indexable) {

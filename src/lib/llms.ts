@@ -7,6 +7,7 @@
 // périmer quand la carte ou les horaires changent. Rien n'y est affirmé que
 // le site n'affiche pas déjà.
 import { ancre, prixPlancher, rubriques, vedettes, type Rubrique } from '../data/carte';
+import { photosPubliees, principale } from '../data/photos';
 import {
   ETABLISSEMENT,
   adresseEnLigne,
@@ -119,7 +120,12 @@ export function llmsFullTxt(site: URL) {
         const plancher = a.aPartirDe ? 'à partir de ' : '';
         return `- ${a.nom} : ${plancher}${brut(a.prix)}${detail}`;
       });
-      return `### [${r.titre}](${url.carte}#${ancre(r)})\n\n${intro}${lignes.join('\n')}`;
+      // Les photos de la rubrique, décrites par leur texte alternatif.
+      const photos = photosPubliees()
+        .filter((p) => p.rubrique === ancre(r))
+        .map((p) => `![${p.alt}](${new URL(principale(p).chemin, site).href})\n\n`)
+        .join('');
+      return `### [${r.titre}](${url.carte}#${ancre(r)})\n\n${intro}${photos}${lignes.join('\n')}`;
     })
     .join('\n\n');
 

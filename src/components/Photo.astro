@@ -1,0 +1,68 @@
+---
+// Une photo de src/data/photos.ts, avec sa légende. Le navigateur choisit
+// lui-même le format (AVIF, sinon WebP) et la largeur qui conviennent à
+// l'écran ; width et height réservent la place avant le chargement, si bien
+// que rien ne saute dans la page.
+import { FORMATS, chemin, largeurs, principale, type Format, type Photo } from '../data/photos';
+
+interface Props {
+  photo: Photo;
+  // Largeur d'affichage selon l'écran, au format de l'attribut `sizes`.
+  sizes: string;
+}
+
+const { photo, sizes } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const srcset = (format: Format) =>
+  largeurs(photo)
+    .map((l) => `${base}${chemin(photo, l, format)} ${l}w`)
+    .join(', ');
+
+// Le WebP le plus large en src : c'est le fichier que les moteurs indexent.
+const reference = principale(photo);
+const [avif, webp] = FORMATS;
+---
+
+<figure class="photo">
+  <picture>
+    <source type={avif.type} srcset={srcset(avif)} sizes={sizes} />
+    <img
+      src={`${base}${reference.chemin}`}
+      srcset={srcset(webp)}
+      sizes={sizes}
+      width={reference.largeur}
+      height={reference.hauteur}
+      alt={photo.alt}
+      loading="lazy"
+      decoding="async"
+    />
+  </picture>
+  <figcaption>{photo.legende}</figcaption>
+</figure>
+
+<style>
+  .photo {
+    margin: 0;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    /* Teinte d'attente, le temps que la photo arrive. */
+    background: var(--cream-dark);
+    box-shadow: var(--shadow);
+  }
+
+  figcaption {
+    max-width: 36ch;
+    margin: 12px auto 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--blue-light);
+    text-wrap: balance;
+  }
+</style>
