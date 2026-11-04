@@ -2,9 +2,21 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BanniereAvis from '../components/BanniereAvis.astro';
 import BandeauConges from '../components/BandeauConges.astro';
-import { ETABLISSEMENT, horairesEnLigne } from '../lib/etablissement';
+import {
+  ETABLISSEMENT,
+  horairesEnLigne,
+  horairesEnPhrase,
+  lienItineraire,
+  telephoneEnLettres,
+} from '../lib/etablissement';
+import { ancre, prixPlancherEnLettres, vedettes } from '../data/carte';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Titre et description du résultat Google. La requête visée ouvre le titre ;
+// la description nomme les plats en vedette : à revoir s'ils changent.
+const titre = `${ETABLISSEMENT.accroche} | ${ETABLISSEMENT.nom}`;
+const description = `Déjeuner à emporter à Lille : tartes salées du jour faites maison et pommes de terre garnies, au ${ETABLISSEMENT.adresse.rue}. ${horairesEnLigne()}.`;
 
 // « Sources préférées » de Google : le lien ouvre l'outil sur notre domaine,
 // où le visiteur n'a plus qu'à cocher LÜM. Un simple lien plutôt que le
@@ -38,20 +50,22 @@ const liens = [
 ];
 ---
 
-<BaseLayout>
+<BaseLayout title={titre} description={description}>
   <main class="stage">
     <BandeauConges />
 
     <section class="panel">
+      {/* L'accroche d'affiche garde son cartouche ; le titre de la page (h1)
+          est la ligne qui dit ce que l'on est, plus bas. */}
       <div class="chip">
-        <h1>Repas Gourmand</h1>
+        <p class="lum-titre titre-affiche">Repas Gourmand</p>
       </div>
 
       <p class="script">On va lümer ?</p>
 
       {/* Pomme de terre au four, fumante : le plat phare, dessiné au trait
           comme les illustrations de l'affiche. */}
-      <svg class="illustration" viewBox="0 0 120 110" role="img" aria-label="Pomme de terre">
+      <svg class="illustration" viewBox="0 0 120 110" role="img" aria-label="Pomme de terre fumante, dessinée au trait">
         <g
           fill="none"
           stroke="currentColor"
@@ -70,7 +84,7 @@ const liens = [
         </g>
       </svg>
 
-      <p class="lede">{ETABLISSEMENT.accroche}</p>
+      <h1 class="lede">{ETABLISSEMENT.accroche}</h1>
 
       <p class="adresse">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -92,12 +106,53 @@ const liens = [
         {horairesEnLigne()}
       </p>
 
-      <a class="lum-pill-btn" href={`${base}/carte`}>
+      <a class="lum-pill-btn" href={`${base}/carte/`}>
         Consulter la carte <span class="arrow">→</span>
       </a>
     </section>
 
     <BanniereAvis />
+
+    <section class="panel panel--plats" aria-labelledby="titre-plats">
+      <div class="chip chip--section">
+        <h2 id="titre-plats">Déjeuner à emporter</h2>
+      </div>
+
+      <p class="intro">Des repas faits maison, à commander au comptoir et à emporter.</p>
+
+      <ul class="plats">
+        {
+          vedettes.map((rubrique) => (
+            <li class="plat">
+              <h3>
+                <a href={`${base}/carte/#${ancre(rubrique)}`}>{rubrique.titre}</a>
+              </h3>
+              {rubrique.intro && <p class="plat__texte">{rubrique.intro}</p>}
+              <p class="plat__prix">
+                {prixPlancherEnLettres(rubrique)} <span class="arrow" aria-hidden="true">→</span>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="aussi">
+        Et aussi&nbsp;: pâtisseries, boissons et café de spécialité, sur{' '}
+        <a href={`${base}/carte/`}>la carte complète</a>.
+      </p>
+
+      <div class="commander">
+        <h3>Comment commander&nbsp;?</h3>
+        <p>
+          Passez au comptoir du {ETABLISSEMENT.adresse.rue}, {horairesEnPhrase()}, et repartez
+          avec votre repas. Une question&nbsp;? Appelez le{' '}
+          <a class="tel" href={`tel:${ETABLISSEMENT.telephone}`}>{telephoneEnLettres()}</a>.
+        </p>
+        <a class="lum-pill-btn" href={lienItineraire()} target="_blank" rel="noopener noreferrer">
+          Itinéraire <span class="arrow">→</span>
+        </a>
+      </div>
+    </section>
 
     <footer class="pied">
       <p>
@@ -186,7 +241,7 @@ const liens = [
     background: var(--cream);
   }
 
-  h1 {
+  .titre-affiche {
     font-size: clamp(2rem, 6vw, 3.4rem);
   }
 
@@ -228,11 +283,156 @@ const liens = [
     margin-bottom: 30px;
   }
 
+  /* Le h1 garde l'allure de l'accroche qu'il remplace : texte courant, pas
+     titre d'affiche (les titres reçoivent Anton en capitales par défaut). */
   .lede {
     max-width: 46ch;
     margin: 0 auto 26px;
+    font-family: var(--font-body);
     font-weight: 700;
     font-size: 1.05rem;
+    line-height: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+    text-wrap: balance;
+  }
+
+  /* --- Déjeuner à emporter : plats en vedette et modalités --- */
+  .panel--plats {
+    padding: 70px 40px 48px;
+    /* Sous la ligne de flottaison : pas d'entrée animée. */
+    animation: none;
+  }
+
+  /* Cartouche de section, aux proportions de ceux de la carte. */
+  .chip--section {
+    padding: 11px 28px;
+  }
+
+  .chip--section h2 {
+    font-size: clamp(1.3rem, 3.4vw, 1.9rem);
+  }
+
+  .intro {
+    max-width: 46ch;
+    margin: 0 auto 28px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-wrap: balance;
+  }
+
+  .plats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+
+  .plat {
+    position: relative;
+    padding: 24px 22px 20px;
+    border: 3px solid var(--blue-light);
+    border-radius: var(--radius);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .plat:hover {
+    border-color: var(--blue);
+    transform: translateY(-2px);
+  }
+
+  .plat h3 {
+    margin-bottom: 8px;
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
+  }
+
+  /* Toute la vignette est cliquable ; le lien reste le titre, qui lui donne
+     un nom court et parlant. */
+  .plat h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+  }
+
+  .plat h3 a:focus-visible {
+    outline: none;
+  }
+
+  .plat:has(a:focus-visible) {
+    outline: 2px solid var(--blue);
+    outline-offset: 4px;
+  }
+
+  .plat__texte {
+    max-width: 34ch;
+    margin: 0 auto;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--blue-light);
+    text-wrap: balance;
+  }
+
+  .plat__prix {
+    margin-top: 12px;
+    font-weight: 800;
+    font-size: 1.02rem;
+    letter-spacing: 0.03em;
+  }
+
+  .plat__prix .arrow {
+    display: inline-block;
+    margin-left: 4px;
+    transition: transform 0.2s;
+  }
+
+  .plat:hover .plat__prix .arrow {
+    transform: translateX(4px);
+  }
+
+  .aussi {
+    margin-top: 24px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-wrap: balance;
+  }
+
+  .aussi a,
+  .tel {
+    border-bottom: 2px solid rgba(24, 0, 172, 0.35);
+    padding-bottom: 1px;
+    transition: border-color 0.2s;
+  }
+
+  .aussi a:hover,
+  .aussi a:focus-visible,
+  .tel:hover,
+  .tel:focus-visible {
+    border-bottom-color: var(--blue);
+  }
+
+  .tel {
+    white-space: nowrap;
+  }
+
+  .commander {
+    margin-top: 34px;
+    padding-top: 30px;
+    border-top: 2px solid var(--cream-dark);
+  }
+
+  .commander h3 {
+    margin-bottom: 10px;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+  }
+
+  .commander p {
+    max-width: 50ch;
+    margin: 0 auto 24px;
+    font-weight: 600;
+    line-height: 1.6;
     text-wrap: balance;
   }
 
@@ -334,6 +534,14 @@ const liens = [
     .chip {
       max-width: calc(100% - 32px);
       padding: 12px 22px;
+    }
+
+    .panel--plats {
+      padding: 60px 22px 40px;
+    }
+
+    .chip--section {
+      padding: 10px 20px;
     }
   }
 </style>

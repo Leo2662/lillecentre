@@ -49,9 +49,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* `.lum-titre` donne l'allure d'un titre à un texte qui n'en est pas un
+   dans le plan de la page (accroche d'affiche, par exemple). */
 h1,
 h2,
-h3 {
+h3,
+.lum-titre {
   font-family: var(--font-display);
   font-weight: 400; /* Anton n'a qu'une graisse */
   text-transform: uppercase;

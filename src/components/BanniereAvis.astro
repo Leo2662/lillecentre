@@ -1,10 +1,10 @@
 ---
 import Bilingue from './Bilingue.astro';
+import { lienAvisGoogle } from '../lib/etablissement';
 
 // Lien direct vers le formulaire de notation : le visiteur n'a pas à trouver
 // « Rédiger un avis » sur la fiche, la fenêtre s'ouvre d'emblée.
-const AVIS_GOOGLE =
-  'https://search.google.com/local/writereview?placeid=ChIJEcAPhSDVwkcROpXzyCcdYyI';
+const AVIS_GOOGLE = lienAvisGoogle();
 ---
 
 <aside class="banniere">

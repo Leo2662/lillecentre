@@ -1,6 +1,12 @@
-// Informations de l'établissement, en un seul endroit. Les données
-// structurées de BaseLayout et le fichier llms.txt s'en servent toutes deux :
+// Informations de l'établissement, en un seul endroit. Les pages, les
+// données structurées et les fichiers llms.txt s'en servent tous :
 // dupliquer l'adresse ou les horaires les condamnerait à diverger.
+
+// Ce que l'on sert, en une proposition : description de l'établissement et
+// llms.txt la reprennent. À revoir quand l'offre change.
+const OFFRE =
+  'tartes salées du jour faites maison, pommes de terre garnies, pâtisseries et café de spécialité';
+
 // Semaine française, du lundi au dimanche. Les deux listes partagent le même
 // ordre : un indice y désigne le même jour.
 const JOURS_FR = [
@@ -25,8 +31,14 @@ const JOURS_SCHEMA = [
 
 export const ETABLISSEMENT = {
   nom: 'LÜM Lille Centre',
-  description: 'Coffee shop et vente à emporter au 64 rue du Molinel, à Lille.',
-  accroche: 'Repas à emporter',
+  // Marque commune aux deux établissements LÜM.
+  marque: 'LÜM',
+  // H1 de l'accueil : la requête principale visée, dite simplement.
+  accroche: 'Restaurant à emporter à Lille',
+  offre: OFFRE,
+  description: `Restaurant à emporter et coffee shop au 64 rue du Molinel, à Lille : ${OFFRE}.`,
+  // Les mêmes, pour `servesCuisine` des données structurées.
+  specialites: ['Tartes salées maison', 'Pommes de terre garnies', 'Pâtisseries', 'Café de spécialité'],
   telephone: '+33642996242',
   adresse: {
     rue: '64 rue du Molinel',
@@ -49,7 +61,33 @@ export const ETABLISSEMENT = {
     'https://www.tiktok.com/@lum_vieuxlille',
   ],
   secondLieu: { nom: 'LÜM Vieux-Lille', url: 'https://lumvieuxlille.fr' },
+  // Identifiant de la fiche Google de l'établissement : avis, plan, itinéraire.
+  googlePlaceId: 'ChIJEcAPhSDVwkcROpXzyCcdYyI',
 } as const;
+
+/** Formulaire de notation de la fiche Google, ouvert d'emblée. */
+export function lienAvisGoogle() {
+  return `https://search.google.com/local/writereview?placeid=${ETABLISSEMENT.googlePlaceId}`;
+}
+
+// Liens Google Maps au format documenté (« Maps URLs ») : l'identifiant de
+// fiche prime, le nom et l'adresse servent de repli.
+const requeteMaps = () => encodeURIComponent(`${ETABLISSEMENT.nom}, ${adresseEnLigne()}`);
+
+/** La fiche de l'établissement sur Google Maps. */
+export function lienFicheMaps() {
+  return `https://www.google.com/maps/search/?api=1&query=${requeteMaps()}&query_place_id=${ETABLISSEMENT.googlePlaceId}`;
+}
+
+/** L'itinéraire jusqu'à l'établissement, dans Google Maps. */
+export function lienItineraire() {
+  return `https://www.google.com/maps/dir/?api=1&destination=${requeteMaps()}&destination_place_id=${ETABLISSEMENT.googlePlaceId}`;
+}
+
+/** « 06 42 99 62 42 » : le numéro tel qu'on l'écrit, insécable. */
+export function telephoneEnLettres() {
+  return ETABLISSEMENT.telephone.replace(/^\+33/, '0').replace(/(\d{2})(?=\d)/g, '$1\u00a0');
+}
 
 /** Jours d'ouverture au format attendu par schema.org. */
 export function joursSchema() {
@@ -57,23 +95,48 @@ export function joursSchema() {
   return JOURS_SCHEMA.slice(premierJour, dernierJour + 1);
 }
 
-/** « Du mardi au samedi », ou le jour seul si l'amplitude se réduit à un. */
-export function joursEnLettres() {
-  const { premierJour, dernierJour } = ETABLISSEMENT.horaires;
+/**
+ * « Du mardi au samedi » (« Tuesday to Saturday »), ou le jour seul si
+ * l'amplitude se réduit à un.
+ */
+export function joursEnLettres(langue: 'fr' | 'en' = 'fr') {
+  // Typés en nombres : les valeurs figées (`as const`) feraient juger la
+  // comparaison impossible au vérificateur de types.
+  const { premierJour, dernierJour }: { premierJour: number; dernierJour: number } =
+    ETABLISSEMENT.horaires;
+  if (langue === 'en') {
+    const [du, au] = [JOURS_SCHEMA[premierJour], JOURS_SCHEMA[dernierJour]];
+    return premierJour === dernierJour ? `${du}s` : `${du} to ${au}`;
+  }
   if (premierJour === dernierJour) return `Le ${JOURS_FR[premierJour]}`;
   return `Du ${JOURS_FR[premierJour]} au ${JOURS_FR[dernierJour]}`;
 }
 
-/** « 10h » plutôt que « 10:00 », comme on écrit l'heure en français. */
-function enHeuresFr(h: string) {
+/**
+ * « 10h » plutôt que « 10:00 », comme on écrit l'heure en français ;
+ * « 10am » en anglais.
+ */
+function enHeures(h: string, langue: 'fr' | 'en') {
   const [heure, minute] = h.split(':');
+  if (langue === 'en') {
+    const suffixe = Number(heure) < 12 ? 'am' : 'pm';
+    const h12 = Number(heure) % 12 || 12;
+    return minute === '00' ? `${h12}${suffixe}` : `${h12}:${minute}${suffixe}`;
+  }
   return minute === '00' ? `${Number(heure)}h` : `${Number(heure)}h${minute}`;
 }
 
-/** « Du mardi au samedi, 10h – 15h ». */
-export function horairesEnLigne() {
+/** « Du mardi au samedi, 10h – 15h » (« Tuesday to Saturday, 10am – 3pm »). */
+export function horairesEnLigne(langue: 'fr' | 'en' = 'fr') {
   const { ouverture, fermeture } = ETABLISSEMENT.horaires;
-  return `${joursEnLettres()}, ${enHeuresFr(ouverture)} – ${enHeuresFr(fermeture)}`;
+  return `${joursEnLettres(langue)}, ${enHeures(ouverture, langue)} – ${enHeures(fermeture, langue)}`;
+}
+
+/** « du mardi au samedi, de 10h à 15h », à glisser dans une phrase. */
+export function horairesEnPhrase() {
+  const { ouverture, fermeture } = ETABLISSEMENT.horaires;
+  const jours = joursEnLettres();
+  return `${jours[0].toLowerCase()}${jours.slice(1)}, de\u00a0${enHeures(ouverture, 'fr')} à\u00a0${enHeures(fermeture, 'fr')}`;
 }
 
 /** Adresse sur une ligne, pour les usages en texte simple. */

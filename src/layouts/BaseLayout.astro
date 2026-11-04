@@ -4,71 +4,46 @@ import '@fontsource/anton';
 import '@fontsource-variable/nunito';
 import '@fontsource/caveat/600.css';
 import '../styles/global.css';
-import { ETABLISSEMENT, congesAAnnoncer, joursSchema } from '../lib/etablissement';
+// Fichiers latins des deux polices du premier écran, préchargés : sans cela
+// le navigateur ne les découvre qu'après avoir lu la feuille de style.
+import antonLatin from '@fontsource/anton/files/anton-latin-400-normal.woff2?url';
+import nunitoLatin from '@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2?url';
+import { ETABLISSEMENT } from '../lib/etablissement';
+import { ICONE, IMAGE_PARTAGE, grapheSchema, noeudMenu, type EtapeFil } from '../lib/seo';
 
 interface Props {
   title?: string;
   description?: string;
   // Pages utilitaires (affiche à imprimer) : inutile de les référencer.
   noindex?: boolean;
+  // Étapes du fil d'Ariane après l'accueil, page courante comprise.
+  filAriane?: EtapeFil[];
+  // Menu détaillé, sur la page qui affiche la carte.
+  menu?: ReturnType<typeof noeudMenu>;
 }
 
 // `base` est pris en compte : les chemins absolus doivent en tenir compte.
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const {
-  title = 'LÜM — Lille Centre',
-  description = `${ETABLISSEMENT.accroche} — LÜM Lille Centre, 64 rue du Molinel`,
+  title = ETABLISSEMENT.nom,
+  description = ETABLISSEMENT.description,
   noindex = false,
+  filAriane,
+  menu,
 } = Astro.props;
 
-const conges = congesAAnnoncer();
+const site = Astro.site!;
 
-// Données structurées de l'établissement, pour les moteurs de recherche.
-// Les URL dérivent de `site` (astro.config.mjs) afin de rester cohérentes.
-// Ne renseigner ici que des informations vérifiées : ces champs alimentent
-// les fiches des moteurs, une valeur inventée y serait publiée telle quelle.
-const donneesStructurees = {
-  '@context': 'https://schema.org',
-  '@type': 'CafeOrCoffeeShop',
-  '@id': new URL('#etablissement', Astro.site).href,
-  name: ETABLISSEMENT.nom,
-  description: ETABLISSEMENT.description,
-  url: Astro.site.href,
-  telephone: ETABLISSEMENT.telephone,
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: ETABLISSEMENT.adresse.rue,
-    postalCode: ETABLISSEMENT.adresse.codePostal,
-    addressLocality: ETABLISSEMENT.adresse.ville,
-    addressCountry: ETABLISSEMENT.adresse.pays,
-  },
-  openingHoursSpecification: {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: joursSchema(),
-    opens: ETABLISSEMENT.horaires.ouverture,
-    closes: ETABLISSEMENT.horaires.fermeture,
-  },
-  // Fermé toute la journée : ouverture et fermeture à 00:00, sur la période.
-  ...(conges && {
-    specialOpeningHoursSpecification: {
-      '@type': 'OpeningHoursSpecification',
-      opens: '00:00',
-      closes: '00:00',
-      validFrom: conges.debut,
-      validThrough: conges.fin,
-    },
-  }),
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: ETABLISSEMENT.geo.latitude,
-    longitude: ETABLISSEMENT.geo.longitude,
-  },
-  servesCuisine: 'Café',
-  priceRange: '€',
-  hasMenu: new URL('carte/', Astro.site).href,
-  sameAs: [...ETABLISSEMENT.reseaux],
-};
+// Les pages sont publiées en dossiers (carte/index.html) et servies avec une
+// barre oblique finale : c'est leur adresse canonique, celle du sitemap.
+const url = new URL(Astro.url.pathname.replace(/\/?$/, '/'), site).href;
+const image = new URL(IMAGE_PARTAGE.chemin, site).href;
+
+// « < » échappé : aucune chaîne ne peut refermer la balise <script>.
+const donneesStructurees = JSON.stringify(
+  grapheSchema({ site, url, titre: title, description, indexable: !noindex, filAriane, menu }),
+).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -76,12 +51,41 @@ const donneesStructurees = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex, follow" />}
-    <meta name="generator" content={Astro.generator} />
-    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <title>{title}</title>
-    <script type="application/ld+json" set:html={JSON.stringify(donneesStructurees)} />
+    <meta name="description" content={description} />
+    {
+      noindex ? (
+        <meta name="robots" content="noindex, follow" />
+      ) : (
+        <>
+          <meta name="robots" content="index, follow, max-image-preview:large" />
+          <link rel="canonical" href={url} />
+        </>
+      )
+    }
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${base}/${ICONE.chemin}`} />
+    <link rel="preload" href={antonLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={nunitoLatin} as="font" type="font/woff2" crossorigin />
+
+    {/* Aperçu des liens partagés (WhatsApp, Facebook, LinkedIn, X…). X lit
+        les balises og: à défaut des siennes : seule la carte lui est propre. */}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content={ETABLISSEMENT.nom} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {!noindex && <meta property="og:url" content={url} />}
+    <meta property="og:image" content={image} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(IMAGE_PARTAGE.largeur)} />
+    <meta property="og:image:height" content={String(IMAGE_PARTAGE.hauteur)} />
+    <meta property="og:image:alt" content={IMAGE_PARTAGE.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image:alt" content={IMAGE_PARTAGE.alt} />
+
+    <meta name="generator" content={Astro.generator} />
+    <script type="application/ld+json" set:html={donneesStructurees} />
 
     {/* Mesure d'audience Cloudflare : sans cookie, donc pas de bandeau de
         consentement à afficher. `is:inline` laisse la balise intacte, les

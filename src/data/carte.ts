@@ -18,6 +18,12 @@ export interface Article {
 export interface Rubrique {
   titre: string;
   titreEn: string;
+  // Une phrase sous le titre de la rubrique, sur la carte et sur l'accueil.
+  intro?: string;
+  introEn?: string;
+  // Plat mis en avant sur l'accueil, avec son prix plancher. Les données
+  // structurées et les descriptions des pages en découlent aussi.
+  vedette?: boolean;
   // Remonte en tête de carte pendant le service du matin (voir carte.astro).
   matinale?: boolean;
   articles: Article[];
@@ -27,6 +33,9 @@ export const rubriques: Rubrique[] = [
   {
     titre: 'Tartes Salées du Jour',
     titreEn: 'Savoury Tarts of the Day',
+    intro: 'Faites maison\u00a0: demandez au comptoir les recettes du jour.',
+    introEn: "Homemade: ask at the counter for today's recipes.",
+    vedette: true,
     articles: [
       {
         nom: 'Au choix',
@@ -39,6 +48,9 @@ export const rubriques: Rubrique[] = [
   {
     titre: 'Pommes de Terre Garnies',
     titreEn: 'Loaded Potatoes',
+    intro: 'Garnies selon vos envies\u00a0; le prix dépend de la garniture.',
+    introEn: 'Topped the way you like; the price depends on the topping.',
+    vedette: true,
     articles: [
       {
         nom: 'Au choix',
@@ -127,3 +139,42 @@ export const rubriques: Rubrique[] = [
     ],
   },
 ];
+
+/** Les plats mis en avant sur l'accueil. */
+export const vedettes = rubriques.filter((r) => r.vedette);
+
+/** « 6,90 € » vaut 6.9 : de quoi trier et comparer les prix. */
+export const montant = (prix: string) => Number.parseFloat(prix.replace(',', '.'));
+
+/**
+ * Ancre de la rubrique sur la carte, tirée de son titre :
+ * « Tartes Salées du Jour » donne « tartes-salees-du-jour ».
+ */
+export function ancre(rubrique: Rubrique) {
+  return rubrique.titre
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // accents ôtés
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/**
+ * Prix d'appel de la rubrique : le plus bas, et s'il faut l'annoncer comme
+ * un plancher (« dès 6,90 € ») ou comme le prix de tous ses articles.
+ */
+export function prixPlancher(rubrique: Rubrique) {
+  const montants = rubrique.articles.map((a) => montant(a.prix));
+  const plusBas = Math.min(...montants);
+  return {
+    prix: rubrique.articles[montants.indexOf(plusBas)].prix,
+    plancher:
+      rubrique.articles.some((a) => a.aPartirDe) || montants.some((m) => m !== plusBas),
+  };
+}
+
+/** « dès 6,90 € », ou « 6,90 € » quand le prix ne varie pas. */
+export function prixPlancherEnLettres(rubrique: Rubrique) {
+  const { prix, plancher } = prixPlancher(rubrique);
+  return plancher ? `dès\u00a0${prix}` : prix;
+}

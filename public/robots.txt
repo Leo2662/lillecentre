@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+# Fichiers de service (affiche à imprimer, QR) : rien à chercher dedans.
+Disallow: /affiche-carte-lum.pdf
+Disallow: /qr-code.svg
 
 Sitemap: https://lumlillecentre.fr/sitemap-index.xml

@@ -1,67 +1,8 @@
 import type { APIRoute } from 'astro';
-import { rubriques } from '../data/carte';
-import {
-  ETABLISSEMENT,
-  adresseEnLigne,
-  congesAAnnoncer,
-  horairesEnLigne,
-} from '../lib/etablissement';
+import { llmsTxt } from '../lib/llms';
 
-// llms.txt : un résumé du site en texte simple, à destination des modèles
-// de langage qui répondent aux questions du type « un coffee shop à Lille ».
-// Généré depuis les mêmes sources que les pages, il ne peut pas se périmer
-// quand la carte change.
-export const GET: APIRoute = async ({ site }) => {
-  const racine = site!.href.replace(/\/$/, '');
-  const { geo } = ETABLISSEMENT;
-  const conges = congesAAnnoncer();
-  const fermeture = conges
-    ? `\n- Fermeture pour congés : du ${conges.debut} au ${conges.fin} inclus, réouverture le ${conges.reouverture}`
-    : '';
-
-  // L'espace insécable sert la typographie à l'écran, pas la lecture machine.
-  const prix = (p: string) => p.replace(/ /g, ' ');
-
-  const carte = rubriques
-    .map((r) => {
-      const lignes = r.articles.map((a) => {
-        const detail = a.description ? ` — ${a.description}` : '';
-        const plancher = a.aPartirDe ? 'à partir de ' : '';
-        return `- ${a.nom} : ${plancher}${prix(a.prix)}${detail}`;
-      });
-      return `### ${r.titre}\n\n${lignes.join('\n')}`;
-    })
-    .join('\n\n');
-
-  const texte = `# ${ETABLISSEMENT.nom}
-
-> ${ETABLISSEMENT.accroche}. ${ETABLISSEMENT.description} Tartes salées du jour, pommes de terre garnies, pâtisseries et café de spécialité, à emporter.
-
-## Informations pratiques
-
-- Adresse : ${adresseEnLigne()}, France
-- Coordonnées : ${geo.latitude}, ${geo.longitude}
-- Téléphone : ${ETABLISSEMENT.telephone}
-- Horaires : ${horairesEnLigne().toLowerCase()}${fermeture}
-- Site : ${racine}/
-- Carte : ${racine}/carte
-- Instagram : ${ETABLISSEMENT.reseaux[0]}
-- TikTok : ${ETABLISSEMENT.reseaux[1]}
-- Second établissement : ${ETABLISSEMENT.secondLieu.nom}, ${ETABLISSEMENT.secondLieu.url}
-
-## La carte
-
-Prix en euros, taxes comprises.
-
-${carte}
-
-## À noter
-
-- La carte de cette page est celle de ${ETABLISSEMENT.nom}, à ne pas confondre avec celle de ${ETABLISSEMENT.secondLieu.nom}.
-- Les prix et la composition peuvent évoluer ; ${racine}/carte fait foi.
-`;
-
-  return new Response(texte, {
+// Résumé du site pour les modèles de langage : voir src/lib/llms.ts.
+export const GET: APIRoute = ({ site }) =>
+  new Response(llmsTxt(site!), {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });
-};

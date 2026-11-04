@@ -3,23 +3,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Entete from '../components/Entete.astro';
 import Bilingue from '../components/Bilingue.astro';
 import BandeauConges from '../components/BandeauConges.astro';
-import { rubriques } from '../data/carte';
+import { ancre, montant, prixPlancherEnLettres, rubriques, vedettes } from '../data/carte';
+import {
+  ETABLISSEMENT,
+  adresseEnLigne,
+  horairesEnLigne,
+  lienItineraire,
+  telephoneEnLettres,
+} from '../lib/etablissement';
+import { noeudMenu } from '../lib/seo';
 
 // Dans chaque rubrique, les articles les plus chers passent en tête. Le tri
 // se fait ici, pas dans les données : un article ajouté n'importe où dans
 // src/data/carte.ts prend de lui-même sa place. À prix égal, l'ordre des
 // données est conservé.
-const montant = (prix: string) => Number.parseFloat(prix.replace(',', '.'));
 const parPrixDecroissant = <T extends { prix: string }>(articles: T[]) =>
   [...articles].sort((a, b) => montant(b.prix) - montant(a.prix));
 
 // Prix affichés sans le symbole € : la note en bas de carte précise la devise.
 const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
+
+const site = Astro.site!;
+
+// Titre du résultat Google : les plats que l'on cherche, puis la ville. À
+// revoir si les plats en vedette changent. La description, elle, suit la
+// carte : plats en vedette et prix d'appel viennent de src/data/carte.ts.
+const titre = 'Tartes salées maison et pommes de terre garnies à Lille | LÜM';
+const plats = vedettes.map((r) => `${r.titre.toLowerCase()} ${prixPlancherEnLettres(r)}`);
+const description = `Repas faits maison à emporter chez ${ETABLISSEMENT.nom} : ${[...plats, 'pâtisseries, boissons et café'].join(', ')}.`;
 ---
 
 <BaseLayout
-  title="La carte — LÜM"
-  description="Tartes salées du jour, pommes de terre garnies, pâtisseries, boissons et café de spécialité à emporter chez LÜM."
+  title={titre}
+  description={description}
+  filAriane={[{ nom: 'La carte', url: new URL('carte/', site).href }]}
+  menu={noeudMenu(site)}
 >
   <script is:inline>
     // Service du matin : de 8h00 à 11h45, la rubrique Barista passe en tête.
@@ -73,17 +91,35 @@ const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
       <button type="button" class="langue" data-langue="en" aria-pressed="false">EN</button>
     </div>
 
+    <p class="intro">
+      <Bilingue
+        fr={`Repas faits maison, pâtisseries, boissons et café de spécialité\u00a0: toute la carte est disponible à emporter, au ${ETABLISSEMENT.adresse.rue} à Lille.`}
+        en={`Homemade meals, pastries, drinks and specialty coffee: the whole menu is available to take away, at ${ETABLISSEMENT.adresse.rue}, Lille.`}
+      />
+    </p>
+
     <BandeauConges />
 
     <div class="rubriques">
       {
         rubriques.map((rubrique) => (
-          <section class:list={['bloc', rubrique.matinale && 'bloc--matinale']}>
+          <section
+            id={ancre(rubrique)}
+            class:list={['bloc', rubrique.matinale && 'bloc--matinale']}
+          >
           <div class="chip">
             <h2>
               <Bilingue fr={rubrique.titre} en={rubrique.titreEn} />
             </h2>
           </div>
+
+          {
+            rubrique.intro && (
+              <p class="bloc__intro">
+                <Bilingue fr={rubrique.intro} en={rubrique.introEn ?? rubrique.intro} />
+              </p>
+            )
+          }
 
           <ul
             class={rubrique.articles.length > 8 ? 'articles articles--deux' : 'articles'}
@@ -116,12 +152,26 @@ const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
       }
     </div>
 
-    <p class="note">
-      <Bilingue
-        fr="Prix en euros, taxes comprises."
-        en="Prices in euros, taxes included."
-      />
-    </p>
+    <footer class="pied">
+      <p class="infos">
+        {/* Un span de la page autour de chaque élément : le séparateur reste
+            hors du soulignement des liens, et les styles de la page, limités
+            à ses propres balises, l'atteignent. */}
+        <span>{ETABLISSEMENT.nom}</span>
+        <span>
+          <a href={lienItineraire()} target="_blank" rel="noopener noreferrer">{adresseEnLigne()}</a>
+        </span>
+        <span><Bilingue fr={horairesEnLigne()} en={horairesEnLigne('en')} /></span>
+        <span><a href={`tel:${ETABLISSEMENT.telephone}`}>{telephoneEnLettres()}</a></span>
+      </p>
+
+      <p class="note">
+        <Bilingue
+          fr="Prix en euros, taxes comprises."
+          en="Prices in euros, taxes included."
+        />
+      </p>
+    </footer>
   </div>
 </BaseLayout>
 
@@ -174,6 +224,18 @@ const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
     background: rgba(249, 241, 230, 0.15);
   }
 
+  /* Une phrase de présentation sous le titre, sur le bleu. */
+  .intro {
+    max-width: 58ch;
+    margin: -22px auto 4px;
+    color: var(--cream);
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+    text-wrap: balance;
+  }
+
   .rubriques {
     display: flex;
     flex-direction: column;
@@ -194,6 +256,20 @@ const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
     border-radius: var(--radius-lg);
     background: var(--cream);
     box-shadow: var(--shadow);
+    /* Arrivée par une ancre (#tartes-salees-du-jour) : le cartouche, qui
+       déborde au-dessus du bloc, reste visible. */
+    scroll-margin-top: 44px;
+  }
+
+  .bloc__intro {
+    max-width: 52ch;
+    margin: -10px auto 22px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--blue-light);
+    text-wrap: balance;
   }
 
   .chip {
@@ -265,6 +341,40 @@ const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
     color: var(--blue-light);
   }
 
+  /* --- Pied de carte : où et quand, puis la note sur les prix --- */
+  .pied {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .infos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    color: var(--cream);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .infos > * + *::before {
+    content: '·';
+    margin: 0 10px;
+    opacity: 0.6;
+  }
+
+  .infos a {
+    border-bottom: 2px solid rgba(249, 241, 230, 0.45);
+    transition: border-color 0.2s;
+  }
+
+  .infos a:hover,
+  .infos a:focus-visible {
+    border-bottom-color: var(--cream);
+  }
+
   .note {
     text-align: center;
     color: var(--cream);
@@ -276,6 +386,17 @@ const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
   @media (max-width: 768px) {
     .bloc {
       padding: 56px 20px 32px;
+    }
+
+    /* Une information par ligne : un séparateur en début de ligne gênerait. */
+    .infos {
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .infos > * + *::before {
+      content: none;
     }
 
     .articles--deux {

@@ -9,7 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "affiche": "node scripts/generer-affiche.mjs"
+    "affiche": "node scripts/generer-affiche.mjs",
+    "images": "node scripts/generer-images.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
