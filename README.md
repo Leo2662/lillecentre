@@ -4,6 +4,23 @@ Site du restaurant à emporter et coffee shop LÜM Lille Centre, 64 rue du
 Molinel à Lille : un accueil et la carte. Le second établissement, LÜM
 Vieux-Lille, a son propre site : https://lumvieuxlille.fr
 
+## Branches et mises en ligne
+
+| Branche | Rôle | Publiée sur |
+|---|---|---|
+| `dev` | travail en cours | https://lillecentre.vercel.app (Vercel, non indexé) |
+| `main` | production | https://lumlillecentre.fr (GitHub Pages) |
+
+1. Modifier sur `dev`, pousser : Vercel met l'aperçu à jour en ~1 min.
+2. Vérifier sur lillecentre.vercel.app.
+3. Mettre en prod : fusionner `dev` dans `main` (PR `dev → main` sur GitHub,
+   ou `git checkout main && git merge dev && git push`). Le workflow
+   `.github/workflows/deploy.yml` publie sur GitHub Pages.
+
+`vercel.json` n'agit que sur Vercel : il ignore `main` et ajoute
+`X-Robots-Tag: noindex` pour que l'aperçu ne concurrence pas le vrai site
+dans Google.
+
 ## Stack
 
 - [Astro](https://astro.build) 7 (sortie statique)
