@@ -24,6 +24,7 @@ const parPrixDecroissant = <T extends { prix: string }>(articles: T[]) =>
 const sansDevise = (prix: string) => prix.replace(/\s*€$/, '');
 
 const site = Astro.site!;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // Titre du résultat Google : les plats que l'on cherche, puis la ville. À
 // revoir si les plats en vedette changent. La description, elle, suit la
@@ -117,6 +118,16 @@ const description = `Repas faits maison à emporter chez ${ETABLISSEMENT.nom} : 
             rubrique.intro && (
               <p class="bloc__intro">
                 <Bilingue fr={rubrique.intro} en={rubrique.introEn ?? rubrique.intro} />
+              </p>
+            )
+          }
+
+          {
+            rubrique.titre === 'Pommes de Terre Garnies' && (
+              <p class="bloc__cta">
+                <a class="lum-pill-btn" href={`${base}/click-and-collect/`}>
+                  <Bilingue fr="Commander en click & collect" en="Order for pick-up" /> <span class="arrow">→</span>
+                </a>
               </p>
             )
           }
@@ -270,6 +281,11 @@ const description = `Repas faits maison à emporter chez ${ETABLISSEMENT.nom} : 
     text-align: center;
     color: var(--blue-light);
     text-wrap: balance;
+  }
+
+  .bloc__cta {
+    margin: -6px 0 24px;
+    text-align: center;
   }
 
   .chip {

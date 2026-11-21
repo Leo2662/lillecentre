@@ -22,7 +22,7 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) =>
-        !['/carte/qr', '/qr-code', '/llms.txt', '/llms-full.txt', '/404'].some((p) =>
+        !['/carte/qr', '/qr-code', '/click-and-collect/merci', '/llms.txt', '/llms-full.txt', '/404'].some((p) =>
           page.includes(p),
         ),
       // Les photos s'affichent sur l'accueil : son entrée les déclare

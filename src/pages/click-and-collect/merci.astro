@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Entete from '../../components/Entete.astro';
+import { ETABLISSEMENT, lienItineraire, telephoneEnLettres } from '../../lib/etablissement';
+
+// Retour du paiement Square, sur ?orderId=… (inscrit par commander). La page
+// demande à /api/click-and-collect/confirmer si la commande est payée ; si
+// Square n'a pas encore validé, elle réessaie quelques secondes.
+const tel = telephoneEnLettres();
+---
+
+<BaseLayout
+  title="Commande confirmée — Click & collect LÜM Lille Centre"
+  description="Votre commande click & collect chez LÜM Lille Centre."
+  noindex
+>
+  <div class="page">
+    <Entete />
+
+    <section class="carte" aria-live="polite">
+      <div data-etat="attente">
+        <h1>Merci&nbsp;!</h1>
+        <p class="texte">On vérifie votre paiement…</p>
+      </div>
+
+      <div data-etat="payee" hidden>
+        <p class="test" data-test hidden>Mode test — aucun paiement réel</p>
+        <h1>C'est commandé&nbsp;!</h1>
+        <p class="texte">
+          Merci <span data-prenom></span>. Votre commande vous attend
+          <strong data-retrait></strong> au {ETABLISSEMENT.adresse.rue}.
+        </p>
+        <p class="numero">
+          <span>N° de retrait</span>
+          <strong data-numero></strong>
+        </p>
+        <ul class="lignes" data-lignes></ul>
+        <p class="aide">
+          Donnez ce numéro ou votre nom au comptoir. Le reçu Square arrive par e-mail. Un empêchement&nbsp;?
+          Appelez le <a href={`tel:${ETABLISSEMENT.telephone}`}>{tel}</a>.
+        </p>
+        <a class="lum-pill-btn" href={lienItineraire()} target="_blank" rel="noopener noreferrer">
+          Itinéraire <span class="arrow">→</span>
+        </a>
+      </div>
+
+      <div data-etat="en-attente" hidden>
+        <h1>Merci&nbsp;!</h1>
+        <p class="texte">
+          Square n'a pas encore confirmé votre paiement. S'il est passé, votre commande est bien
+          enregistrée&nbsp;: inutile de payer une seconde fois. Un doute&nbsp;? Appelez le
+          <a href={`tel:${ETABLISSEMENT.telephone}`}>{tel}</a>.
+        </p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 28px var(--gutter) 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .carte {
+    padding: 40px 30px;
+    border-radius: var(--radius-lg);
+    background: var(--cream);
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+
+  .carte > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .carte > div[hidden] {
+    display: none;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 8vw, 3.4rem);
+  }
+
+  .texte {
+    max-width: 44ch;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .test {
+    padding: 4px 14px;
+    border: 2px dashed var(--blue-light);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .numero {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 28px;
+    border: var(--border);
+    border-radius: var(--radius);
+  }
+
+  .numero span {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .numero strong {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 2.2rem;
+    letter-spacing: 0.08em;
+  }
+
+  .lignes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 700;
+  }
+
+  .aide {
+    max-width: 46ch;
+    font-size: 0.9rem;
+    color: var(--blue-light);
+  }
+
+  .carte a:not(.lum-pill-btn) {
+    border-bottom: 2px solid currentColor;
+  }
+</style>
+
+<script>
+  import { creneauDe, euros, heureEnLettres, libelleJour } from '../../data/click-and-collect';
+
+  interface Reponse {
+    statut: 'payee' | 'en-attente' | 'erreur';
+    test?: boolean;
+    numero?: string;
+    prenom?: string;
+    retrait?: string;
+    lignes?: { nom: string; quantite: number }[];
+    totalCentimes?: number;
+  }
+
+  const montrer = (etat: string) =>
+    document.querySelectorAll<HTMLElement>('[data-etat]').forEach((e) => (e.hidden = e.dataset.etat !== etat));
+  const remplir = (cle: string, texte: string) =>
+    document.querySelectorAll(`[data-${cle}]`).forEach((e) => (e.textContent = texte));
+
+  let orderId = new URLSearchParams(location.search).get('orderId') ?? '';
+  if (!orderId) {
+    try {
+      orderId = sessionStorage.getItem('lum-click-collect') ?? '';
+    } catch {}
+  }
+
+  async function verifier(essai = 0): Promise<void> {
+    let r: Reponse = { statut: 'erreur' };
+    try {
+      const reponse = await fetch('/api/click-and-collect/confirmer', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      });
+      r = await reponse.json();
+    } catch {}
+
+    if (r.statut === 'payee') {
+      const c = creneauDe(r.retrait ?? '');
+      remplir('prenom', r.prenom ?? '');
+      remplir('numero', r.numero ?? '');
+      remplir('retrait', `${libelleJour(c.jour).toLowerCase()} à ${heureEnLettres(c.heure)}`);
+      const lignes = document.querySelector('[data-lignes]')!;
+      for (const l of r.lignes ?? []) {
+        const li = document.createElement('li');
+        li.textContent = `${l.quantite} × ${l.nom}`;
+        lignes.append(li);
+      }
+      const total = document.createElement('li');
+      total.textContent = `Total payé : ${euros(r.totalCentimes ?? 0)}`;
+      lignes.append(total);
+      document.querySelector<HTMLElement>('[data-test]')!.hidden = !r.test;
+      try {
+        sessionStorage.removeItem('lum-click-collect');
+      } catch {}
+      return montrer('payee');
+    }
+    // Square peut mettre quelques secondes à marquer la commande payée.
+    if (orderId && essai < 6) {
+      await new Promise((ok) => setTimeout(ok, 2000));
+      return verifier(essai + 1);
+    }
+    montrer('en-attente');
+  }
+
+  verifier();
+</script>

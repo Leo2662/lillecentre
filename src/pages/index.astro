@@ -187,9 +187,19 @@ const liens = [
           avec votre repas. Une question&nbsp;? Appelez le{' '}
           <a class="tel" href={`tel:${ETABLISSEMENT.telephone}`}>{telephoneEnLettres()}</a>.
         </p>
-        <a class="lum-pill-btn" href={lienItineraire()} target="_blank" rel="noopener noreferrer">
-          Itinéraire <span class="arrow">→</span>
-        </a>
+        <p>
+          Pressé&nbsp;? Les écrasés de pomme de terre se commandent aussi{' '}
+          <a href={`${base}/click-and-collect/`}>en click &amp; collect</a>&nbsp;: payés en ligne,
+          prêts à l'heure choisie.
+        </p>
+        <div class="commander__boutons">
+          <a class="lum-pill-btn" href={`${base}/click-and-collect/`}>
+            Click &amp; collect <span class="arrow">→</span>
+          </a>
+          <a class="lum-pill-btn" href={lienItineraire()} target="_blank" rel="noopener noreferrer">
+            Itinéraire <span class="arrow">→</span>
+          </a>
+        </div>
       </div>
     </section>
 
@@ -483,6 +493,17 @@ const liens = [
     font-weight: 600;
     line-height: 1.6;
     text-wrap: balance;
+  }
+
+  .commander p a:not(.lum-pill-btn) {
+    border-bottom: 2px solid currentColor;
+  }
+
+  .commander__boutons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
   }
 
   /* --- Réseaux sociaux, dans le pied de page sur le bleu --- */

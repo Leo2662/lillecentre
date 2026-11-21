@@ -1,0 +1,565 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Entete from '../../components/Entete.astro';
+import BandeauConges from '../../components/BandeauConges.astro';
+import { ECRASES, QUANTITE_MAX, RETRAIT, euros, heureEnLettres } from '../../data/click-and-collect';
+import {
+  ETABLISSEMENT,
+  adresseEnLigne,
+  horairesEnLigne,
+  lienItineraire,
+  telephoneEnLettres,
+} from '../../lib/etablissement';
+
+const site = Astro.site!;
+
+// Bac à sable Square tant que PUBLIC_SQUARE_ENV ne vaut pas « production » :
+// la page le dit, pour que personne ne croie avoir payé pour de vrai.
+const modeTest = import.meta.env.PUBLIC_SQUARE_ENV !== 'production';
+---
+
+<BaseLayout
+  title="Click & collect : écrasés de pomme de terre à emporter | LÜM Lille Centre"
+  description={`Commandez en ligne vos écrasés de pomme de terre maison et récupérez-les au ${ETABLISSEMENT.adresse.rue} à Lille, à l'heure choisie.`}
+  filAriane={[{ nom: 'Click & collect', url: new URL('click-and-collect/', site).href }]}
+>
+  <div class="page">
+    <Entete />
+
+    <h1 class="titre-page">Click &amp; collect</h1>
+
+    <p class="intro">
+      Vos écrasés de pomme de terre maison, payés en ligne et prêts à l'heure choisie&nbsp;: vous
+      n'avez plus qu'à passer les prendre au {ETABLISSEMENT.adresse.rue}.
+    </p>
+
+    {
+      modeTest && (
+        <p class="test" role="note">
+          <strong>Mode test</strong> — aucun paiement réel. Sur la page Square, utilisez la carte
+          4111&nbsp;1111&nbsp;1111&nbsp;1111, une date future et n'importe quel code.
+        </p>
+      )
+    }
+
+    <BandeauConges />
+
+    <form class="commande" data-commande novalidate>
+      <section class="bloc">
+        <div class="chip"><h2>Vos écrasés</h2></div>
+
+        <ul class="ecrases">
+          {
+            ECRASES.map((e) => (
+              <li class="ecrase">
+                <div class="ecrase__texte">
+                  <span class="ecrase__nom">{e.nom}</span>
+                  <span class="ecrase__garniture">{e.garniture}</span>
+                </div>
+                <span class="ecrase__prix">{euros(e.prixCentimes)}</span>
+                <div class="compteur" role="group" aria-label={`Quantité, ${e.nom}`}>
+                  <button type="button" data-moins={e.id} aria-label={`Un ${e.nom} de moins`}>−</button>
+                  <input
+                    type="number"
+                    inputmode="numeric"
+                    min="0"
+                    max={QUANTITE_MAX}
+                    value="0"
+                    name={`q-${e.id}`}
+                    data-quantite={e.id}
+                    data-prix={e.prixCentimes}
+                    aria-label={`Quantité, ${e.nom}`}
+                  />
+                  <button type="button" data-plus={e.id} aria-label={`Un ${e.nom} de plus`}>+</button>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="bloc">
+        <div class="chip"><h2>Retrait</h2></div>
+
+        <label class="champ">
+          <span>Jour et heure de retrait</span>
+          <select name="creneau" data-creneaux required>
+            <option value="">Chargement des créneaux…</option>
+          </select>
+        </label>
+        <p class="aide">
+          De {heureEnLettres(RETRAIT.premier)} à {heureEnLettres(RETRAIT.dernier)}, au moins
+          {RETRAIT.delaiMinutes}&nbsp;minutes après votre commande.
+        </p>
+        <noscript>
+          <p class="erreur">
+            La commande en ligne demande JavaScript. Vous pouvez aussi commander au comptoir ou au
+            {telephoneEnLettres()}.
+          </p>
+        </noscript>
+      </section>
+
+      <section class="bloc">
+        <div class="chip"><h2>Vos coordonnées</h2></div>
+
+        <div class="champs">
+          <label class="champ">
+            <span>Prénom</span>
+            <input name="prenom" autocomplete="given-name" maxlength="60" required />
+          </label>
+          <label class="champ">
+            <span>Nom</span>
+            <input name="nom" autocomplete="family-name" maxlength="60" required />
+          </label>
+          <label class="champ">
+            <span>Téléphone</span>
+            <input name="telephone" type="tel" autocomplete="tel" maxlength="25" required />
+          </label>
+          <label class="champ">
+            <span>E-mail <small>(pour le reçu)</small></span>
+            <input name="email" type="email" autocomplete="email" maxlength="120" required />
+          </label>
+          <label class="champ champ--large">
+            <span>Une précision&nbsp;? <small>(facultatif)</small></span>
+            <input name="note" maxlength="200" placeholder="Allergie, sans oignons…" />
+          </label>
+        </div>
+      </section>
+
+      <div class="payer">
+        <p class="total">Total <strong data-total>{euros(0)}</strong></p>
+        <p class="erreur" data-erreur role="alert" hidden></p>
+        <button class="lum-pill-btn lum-pill-btn--inverse" type="submit" data-payer disabled>
+          Payer et commander <span class="arrow">→</span>
+        </button>
+        <p class="securite">Paiement sécurisé par Square. Vous recevez un reçu par e-mail.</p>
+      </div>
+    </form>
+
+    <footer class="pied">
+      <p class="infos">
+        <span>{ETABLISSEMENT.nom}</span>
+        <span>
+          <a href={lienItineraire()} target="_blank" rel="noopener noreferrer">{adresseEnLigne()}</a>
+        </span>
+        <span>{horairesEnLigne()}</span>
+        <span><a href={`tel:${ETABLISSEMENT.telephone}`}>{telephoneEnLettres()}</a></span>
+      </p>
+    </footer>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 28px var(--gutter) 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 46px;
+  }
+
+  .titre-page {
+    margin: 18px 0 0;
+    text-align: center;
+    font-size: clamp(2.6rem, 9vw, 5rem);
+    color: var(--cream);
+  }
+
+  .intro {
+    max-width: 52ch;
+    margin: -22px auto 0;
+    color: var(--cream);
+    font-weight: 700;
+    line-height: 1.6;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .test {
+    margin: -16px 0 0;
+    padding: 12px 18px;
+    border: 2px dashed var(--cream);
+    border-radius: var(--radius);
+    color: var(--cream);
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .commande {
+    display: flex;
+    flex-direction: column;
+    gap: 46px;
+  }
+
+  .bloc {
+    position: relative;
+    padding: 56px 30px 32px;
+    border-radius: var(--radius-lg);
+    background: var(--cream);
+    box-shadow: var(--shadow);
+  }
+
+  .chip {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    max-width: calc(100% - 40px);
+    padding: 10px 26px;
+    border: 3px solid var(--blue-light);
+    border-radius: var(--radius);
+    background: var(--cream);
+  }
+
+  .chip h2 {
+    font-size: clamp(1.25rem, 3.4vw, 1.7rem);
+  }
+
+  /* --- Les écrasés --- */
+  .ecrases {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .ecrase {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 8px 18px;
+  }
+
+  .ecrase__texte {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ecrase__nom {
+    font-weight: 800;
+    font-size: 1.08rem;
+  }
+
+  .ecrase__garniture {
+    font-size: 0.92rem;
+    line-height: 1.4;
+    color: var(--blue-light);
+  }
+
+  .ecrase__prix {
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .compteur {
+    display: inline-flex;
+    align-items: center;
+    border: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .compteur button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: var(--blue);
+    font: 800 1.2rem var(--font-body);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .compteur button:hover {
+    background: var(--blue);
+    color: var(--cream);
+  }
+
+  .compteur input {
+    width: 36px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: var(--blue);
+    font: 800 1.05rem var(--font-body);
+    text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .compteur input::-webkit-inner-spin-button,
+  .compteur input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* --- Champs --- */
+  .champs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+  }
+
+  .champ {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 800;
+    font-size: 0.9rem;
+  }
+
+  .champ small {
+    font-weight: 600;
+    color: var(--blue-light);
+  }
+
+  .champ--large {
+    grid-column: 1 / -1;
+  }
+
+  .champ input,
+  .champ select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid var(--blue-light);
+    border-radius: 12px;
+    background: var(--white);
+    color: var(--blue);
+    font: 600 1rem var(--font-body);
+  }
+
+  .champ input:focus-visible,
+  .champ select:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 1px;
+  }
+
+  .aide {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: var(--blue-light);
+  }
+
+  /* --- Total et paiement, sur le bleu --- */
+  .payer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: var(--cream);
+    text-align: center;
+  }
+
+  .total {
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .total strong {
+    margin-left: 8px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 2rem;
+    letter-spacing: 0.02em;
+  }
+
+  .payer button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .payer button:disabled:hover {
+    background: transparent;
+    color: var(--cream);
+  }
+
+  .erreur {
+    max-width: 48ch;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: var(--cream);
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+
+  .bloc .erreur {
+    margin-top: 12px;
+    border: 2px solid var(--blue-light);
+  }
+
+  .securite {
+    font-size: 0.85rem;
+    font-weight: 700;
+    opacity: 0.75;
+  }
+
+  /* --- Pied --- */
+  .infos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    color: var(--cream);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .infos > * + *::before {
+    content: '·';
+    margin: 0 10px;
+    opacity: 0.6;
+  }
+
+  .infos a {
+    border-bottom: 2px solid rgba(249, 241, 230, 0.45);
+  }
+
+  @media (max-width: 600px) {
+    .bloc {
+      padding: 52px 18px 26px;
+    }
+
+    .ecrase {
+      grid-template-columns: 1fr auto;
+    }
+
+    .compteur {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+
+    .champs {
+      grid-template-columns: 1fr;
+    }
+
+    .infos {
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .infos > * + *::before {
+      content: none;
+    }
+  }
+</style>
+
+<script>
+  import { ECRASES, QUANTITE_MAX, creneaux, euros, heureEnLettres, libelleJour } from '../../data/click-and-collect';
+
+  const form = document.querySelector<HTMLFormElement>('[data-commande]')!;
+  const select = form.querySelector<HTMLSelectElement>('[data-creneaux]')!;
+  const total = form.querySelector<HTMLElement>('[data-total]')!;
+  const erreur = form.querySelector<HTMLElement>('[data-erreur]')!;
+  const payer = form.querySelector<HTMLButtonElement>('[data-payer]')!;
+  const quantites = [...form.querySelectorAll<HTMLInputElement>('[data-quantite]')];
+
+  // --- Créneaux : calculés ici, à l'heure du visiteur, la page étant statique.
+  function remplirCreneaux() {
+    const choisi = select.value;
+    const liste = creneaux();
+    select.replaceChildren();
+    if (!liste.length) {
+      select.append(new Option('Aucun créneau disponible pour le moment', ''));
+      return;
+    }
+    select.append(new Option('Choisissez un créneau', ''));
+    let groupe: HTMLOptGroupElement | undefined;
+    for (const c of liste) {
+      if (groupe?.dataset.jour !== c.jour) {
+        groupe = document.createElement('optgroup');
+        groupe.label = libelleJour(c.jour);
+        groupe.dataset.jour = c.jour;
+        select.append(groupe);
+      }
+      groupe.append(new Option(`${libelleJour(c.jour)}, ${heureEnLettres(c.heure)}`, c.iso));
+    }
+    if (liste.some((c) => c.iso === choisi)) select.value = choisi;
+  }
+  remplirCreneaux();
+  // Une page laissée ouverte ne doit pas proposer un créneau dépassé.
+  setInterval(remplirCreneaux, 60_000);
+
+  // --- Quantités et total
+  const borne = (n: number) => Math.min(QUANTITE_MAX, Math.max(0, Number.isFinite(n) ? Math.round(n) : 0));
+
+  function majTotal() {
+    let centimes = 0;
+    for (const input of quantites) {
+      input.value = String(borne(Number(input.value)));
+      centimes += Number(input.value) * Number(input.dataset.prix);
+    }
+    total.textContent = euros(centimes);
+    payer.disabled = centimes === 0;
+    payer.firstChild!.textContent = centimes ? `Payer ${euros(centimes)} ` : 'Payer et commander ';
+  }
+
+  form.addEventListener('click', (ev) => {
+    const bouton = (ev.target as HTMLElement).closest<HTMLButtonElement>('[data-plus], [data-moins]');
+    if (!bouton) return;
+    const id = bouton.dataset.plus ?? bouton.dataset.moins;
+    const input = quantites.find((i) => i.dataset.quantite === id)!;
+    input.value = String(borne(Number(input.value) + (bouton.dataset.plus ? 1 : -1)));
+    majTotal();
+  });
+  quantites.forEach((i) => i.addEventListener('input', majTotal));
+  majTotal();
+
+  // --- Envoi
+  function montrerErreur(message: string) {
+    erreur.textContent = message;
+    erreur.hidden = false;
+  }
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    erreur.hidden = true;
+    const d = new FormData(form);
+    const champ = (n: string) => String(d.get(n) ?? '').trim();
+
+    if (!select.value) return montrerErreur('Choisissez un créneau de retrait.');
+    for (const [n, message] of [
+      ['prenom', 'Indiquez votre prénom.'],
+      ['nom', 'Indiquez votre nom.'],
+      ['telephone', 'Indiquez votre téléphone : on vous appelle en cas de souci.'],
+      ['email', 'Indiquez votre e-mail, pour le reçu.'],
+    ]) {
+      if (!champ(n)) return montrerErreur(message);
+    }
+
+    payer.disabled = true;
+    try {
+      const reponse = await fetch('/api/click-and-collect/commander', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          articles: Object.fromEntries(ECRASES.map((e) => [e.id, Number(d.get(`q-${e.id}`) ?? 0)])),
+          creneau: select.value,
+          prenom: champ('prenom'),
+          nom: champ('nom'),
+          telephone: champ('telephone'),
+          email: champ('email'),
+          note: champ('note'),
+        }),
+      });
+      const corps = (await reponse.json().catch(() => ({}))) as { url?: string; orderId?: string; erreur?: string };
+      if (!reponse.ok || !corps.url) throw new Error(corps.erreur ?? 'Le paiement est indisponible pour le moment.');
+      // Secours si Square ne renvoie pas le numéro de commande au retour.
+      try {
+        sessionStorage.setItem('lum-click-collect', corps.orderId ?? '');
+      } catch {}
+      location.href = corps.url;
+    } catch (e) {
+      montrerErreur(e instanceof Error ? e.message : String(e));
+      remplirCreneaux();
+      majTotal();
+    }
+  });
+</script>
