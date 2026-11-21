@@ -95,6 +95,11 @@ const donneesStructurees = JSON.stringify(
       type="module"
       src="https://static.cloudflareinsights.com/beacon.min.js"
       data-cf-beacon='{"token": "1499722904844b059bb5307b5585893e"}'></script>
+    {/* Compteur de visites par page LÜM (tableau de bord commun avec
+        lumvieuxlille.fr) : voir src/scripts/audience.ts. */}
+    <script>
+      import '../scripts/audience.ts';
+    </script>
   </head>
   <body>
     <slot />
