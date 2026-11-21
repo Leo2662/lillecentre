@@ -132,8 +132,9 @@ const liens = [
 
           <p class="intro">
             De la cuisine maison, servie chaude et prête à emporter&nbsp;: nos pommes de terre
-            garnies font un déjeuner complet, à savourer au bureau ou au parc. La garniture se
-            choisit au comptoir.
+            garnies font un déjeuner complet, à savourer au bureau ou au parc. Trois recettes au
+            choix, à commander au comptoir ou{' '}
+            <a href={`${base}/click-and-collect/`}>en click &amp; collect</a>.
           </p>
 
           {/* Une colonne de 360 px au plus par photo : d'où la valeur de sizes. */}
@@ -378,6 +379,10 @@ const liens = [
     font-weight: 700;
     font-size: 1.05rem;
     text-wrap: balance;
+  }
+
+  .intro a {
+    border-bottom: 2px solid currentColor;
   }
 
   .plats {

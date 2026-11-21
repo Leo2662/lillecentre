@@ -13,15 +13,38 @@ export interface Ecrase {
   /** Identifiant stable, envoyé par le formulaire. */
   id: string;
   nom: string;
+  nomEn: string;
   garniture: string;
+  garnitureEn: string;
   /** Prix TTC en centimes : c'est lui que Square encaisse. */
   prixCentimes: number;
 }
 
 export const ECRASES: Ecrase[] = [
-  { id: 'effiloche', nom: "L'Effiloché", garniture: 'Patate douce & pulled porc', prixCentimes: 990 },
-  { id: 'nordique', nom: 'La Nordique', garniture: 'Saumon & crème', prixCentimes: 990 },
-  { id: 'poulette', nom: 'La Poulette', garniture: 'Poulet & pesto', prixCentimes: 890 },
+  {
+    id: 'effiloche',
+    nom: "L'Effiloché",
+    nomEn: "L'Effiloché",
+    garniture: 'Patate douce & pulled porc',
+    garnitureEn: 'Sweet potato & pulled pork',
+    prixCentimes: 990,
+  },
+  {
+    id: 'nordique',
+    nom: 'La Nordique',
+    nomEn: 'La Nordique',
+    garniture: 'Saumon & crème',
+    garnitureEn: 'Salmon & cream',
+    prixCentimes: 990,
+  },
+  {
+    id: 'poulette',
+    nom: 'La Poulette',
+    nomEn: 'La Poulette',
+    garniture: 'Poulet & pesto',
+    garnitureEn: 'Chicken & pesto',
+    prixCentimes: 890,
+  },
 ];
 
 /** Libellé de la ligne de commande dans Square : « Écrasé L'Effiloché ». */

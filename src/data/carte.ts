@@ -5,13 +5,15 @@
 // Le français fait foi : c'est lui qui s'affiche par défaut, y compris sans
 // JavaScript. Les champs `*En` ne sont qu'une traduction de confort.
 
+import { ECRASES, euros } from './click-and-collect.js';
+
 export interface Article {
   nom: string;
   nomEn: string;
   prix: string;
   description?: string;
   descriptionEn?: string;
-  // Prix plancher, selon la garniture : affiché « dès 7,90 € ».
+  // Prix plancher, selon la recette : affiché « dès 6,90 € ».
   aPartirDe?: boolean;
 }
 
@@ -48,17 +50,18 @@ export const rubriques: Rubrique[] = [
   {
     titre: 'Pommes de Terre Garnies',
     titreEn: 'Loaded Potatoes',
-    intro: 'Garnies selon vos envies\u00a0; le prix dépend de la garniture.',
-    introEn: 'Topped the way you like; the price depends on the topping.',
+    intro: 'Nos écrasés de pomme de terre maison, à commander aussi en click\u00a0&\u00a0collect.',
+    introEn: 'Our homemade crushed potatoes, also available to order online for pick-up.',
     vedette: true,
-    articles: [
-      {
-        nom: 'Au choix',
-        nomEn: 'Filling of your choice',
-        prix: '7,90 €',
-        aPartirDe: true,
-      },
-    ],
+    // Mêmes recettes et mêmes prix que le click & collect : une seule source,
+    // src/data/click-and-collect.ts.
+    articles: ECRASES.map((e) => ({
+      nom: e.nom,
+      nomEn: e.nomEn,
+      prix: euros(e.prixCentimes),
+      description: e.garniture,
+      descriptionEn: e.garnitureEn,
+    })),
   },
   {
     titre: 'Sucré & Pâtisseries',

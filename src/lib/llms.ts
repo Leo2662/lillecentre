@@ -68,7 +68,7 @@ function infosPratiques() {
     ...(conges
       ? [`Fermeture pour congés : du ${conges.debut} au ${conges.fin} inclus, réouverture le ${conges.reouverture}`]
       : []),
-    'Service : à emporter, commande au comptoir',
+    'Service : à emporter, commande au comptoir ; écrasés de pomme de terre aussi en click & collect (paiement en ligne, retrait à l’heure choisie)',
     'Prix : en euros, taxes comprises',
     `Plan : ${lienFicheMaps()}`,
   ];
