@@ -2,36 +2,142 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { qrEnSvg } from '../lib/qr';
 
-const cible = Astro.site.href;
-const apercu = await qrEnSvg(cible);
-const lisible = cible.replace(/^https:\/\//, '').replace(/\/$/, '');
+// Générateur de QR codes suivis : chaque QR code imprimé (flyer, affiche…)
+// ouvre le site avec ?qr=<code>, et le compteur Audience (lum-audience,
+// tableau « QR codes ») compte les scans de chaque code. Un nouveau code
+// n'a rien à déclarer : il suffit de le taper ici, il apparaît au tableau de
+// bord dès son premier scan.
+const CODE_PAR_DEFAUT = 'flyers-11/26';
+const PAGES = [
+  { chemin: '/', libelle: 'Accueil' },
+  { chemin: '/carte/', libelle: 'La carte' },
+];
 
-const FICHIER = '/qr-code.svg';
+const site = Astro.site!;
+const urlSuivie = (code: string, chemin = '/') => {
+  const u = new URL(chemin, site);
+  // La barre du code reste lisible (pas de %2F) : elle est permise dans une
+  // requête, et le QR code reste aussi court que possible.
+  return `${u.href}?qr=${encodeURIComponent(code).replace(/%2F/g, '/')}`;
+};
+
+const cible = urlSuivie(CODE_PAR_DEFAUT);
+const apercu = await qrEnSvg(cible);
+
+const accueil = site.href;
+const lisibleAccueil = accueil.replace(/^https:\/\//, '').replace(/\/$/, '');
 ---
 
 <BaseLayout title="QR code — LÜM Lille Centre" noindex>
   <main class="page">
-    <h1>Le QR code</h1>
-    <p class="cible">Il renvoie vers {lisible}</p>
+    <h1>Les QR codes</h1>
+    <p class="intro">
+      Un code par support imprimé&nbsp;: chaque scan est compté dans Audience, tableau
+      «&nbsp;QR codes&nbsp;» de lumlillecentre.fr.
+    </p>
+
+    <form class="reglages" id="qr-form" data-site={site.href}>
+      <label>
+        <span>Nom de la campagne</span>
+        <input
+          id="qr-code"
+          name="code"
+          value={CODE_PAR_DEFAUT}
+          maxlength="40"
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          required
+        />
+      </label>
+      <label>
+        <span>Page ouverte</span>
+        <select id="qr-page" name="page">
+          {PAGES.map((p) => <option value={p.chemin}>{p.libelle}</option>)}
+        </select>
+      </label>
+      <p class="aide" id="qr-erreur" hidden>
+        Lettres, chiffres, tirets et barres seulement (ex. flyers-11/26, affiche-vitrine).
+      </p>
+    </form>
 
     <div class="cadre">
-      <div class="qr" set:html={apercu} />
+      <div class="qr" id="qr-apercu" set:html={apercu} />
+    </div>
+    <p class="cible" id="qr-cible">{cible.replace(/^https:\/\//, '')}</p>
+
+    <div class="boutons">
+      <button class="bouton" type="button" id="qr-svg">SVG <span class="arrow">↓</span></button>
+      <button class="bouton bouton--clair" type="button" id="qr-png">PNG <span class="arrow">↓</span></button>
     </div>
 
-    <a class="bouton" href={FICHIER} download="lum-qr.svg">
-      Télécharger en SVG <span class="arrow">↓</span>
-    </a>
-
     <p class="note">
-      Format vectoriel : il reste net à n'importe quelle taille, d'un sticker à
-      une affiche. La zone de silence est incluse dans le fichier.
+      SVG pour l'imprimeur&nbsp;: vectoriel, net à toute taille, zone de silence incluse.
+      Le PNG (2000&nbsp;px) sert pour Canva ou un mail. Un scan n'est compté qu'en arrivant
+      sur le site&nbsp;: ni rechargement, ni retour arrière.
     </p>
 
     <p class="retour">
-      <a href="/carte/qr/">Voir l'affiche A4 prête à imprimer</a>
+      QR code simple, sans suivi, vers {lisibleAccueil}&nbsp;:
+      <a href="/qr-code.svg" download="lum-qr.svg">SVG</a> ·
+      <a href="/carte/qr/">affiche A4</a>
     </p>
   </main>
 </BaseLayout>
+
+<script>
+  import QRCode from 'qrcode';
+  import { COULEURS } from '../lib/qr';
+
+  const form = document.getElementById('qr-form') as HTMLFormElement;
+  const champ = document.getElementById('qr-code') as HTMLInputElement;
+  const page = document.getElementById('qr-page') as HTMLSelectElement;
+  const apercu = document.getElementById('qr-apercu')!;
+  const cible = document.getElementById('qr-cible')!;
+  const erreur = document.getElementById('qr-erreur')!;
+  const boutons = [document.getElementById('qr-svg'), document.getElementById('qr-png')] as HTMLButtonElement[];
+  const site = form.dataset.site!;
+
+  // Même règle que le serveur lum-audience (normaliserCode).
+  const VALIDE = /^[a-z0-9](?:[a-z0-9\-_/.]{0,38}[a-z0-9])?$/;
+  const OPTIONS = { errorCorrectionLevel: 'H', color: COULEURS } as const;
+
+  const code = () => champ.value.trim().toLowerCase();
+  const url = () => `${new URL(page.value, site).href}?qr=${encodeURIComponent(code()).replace(/%2F/g, '/')}`;
+  const nomFichier = (ext: string) => `lum-qr-${code().replace(/[^a-z0-9]+/g, '-')}.${ext}`;
+
+  async function rafraichir() {
+    const ok = VALIDE.test(code()) && !code().includes('//');
+    erreur.hidden = ok;
+    boutons.forEach((b) => (b.disabled = !ok));
+    apercu.classList.toggle('qr--invalide', !ok);
+    if (!ok) return;
+    apercu.innerHTML = await QRCode.toString(url(), { ...OPTIONS, type: 'svg', margin: 0 });
+    cible.textContent = url().replace(/^https:\/\//, '');
+  }
+
+  function telecharger(href: string, nom: string) {
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = nom;
+    a.click();
+  }
+
+  boutons[0].addEventListener('click', async () => {
+    const svg = await QRCode.toString(url(), { ...OPTIONS, type: 'svg', margin: 4 });
+    const lien = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+    telecharger(lien, nomFichier('svg'));
+    setTimeout(() => URL.revokeObjectURL(lien), 1000);
+  });
+
+  boutons[1].addEventListener('click', async () => {
+    telecharger(await QRCode.toDataURL(url(), { ...OPTIONS, margin: 4, width: 2000 }), nomFichier('png'));
+  });
+
+  champ.addEventListener('input', rafraichir);
+  page.addEventListener('change', rafraichir);
+  form.addEventListener('submit', (e) => e.preventDefault());
+</script>
 
 <style>
   .page {
@@ -50,16 +156,66 @@ const FICHIER = '/qr-code.svg';
     font-size: clamp(2.2rem, 7vw, 3.4rem);
   }
 
-  .cible {
-    margin-top: 10px;
+  .intro {
+    max-width: 44ch;
+    margin-top: 12px;
+    line-height: 1.6;
+    opacity: 0.85;
+    text-wrap: balance;
+  }
+
+  .reglages {
+    width: 100%;
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 14px;
+    text-align: left;
+  }
+
+  .reglages label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.04em;
-    opacity: 0.8;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .reglages input,
+  .reglages select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid rgba(249, 241, 230, 0.45);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--cream);
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  .reglages select option {
+    color: var(--blue);
+  }
+
+  .reglages input:focus-visible,
+  .reglages select:focus-visible {
+    outline: none;
+    border-color: var(--cream);
+  }
+
+  .aide {
+    grid-column: 1 / -1;
+    font-size: 0.85rem;
+    opacity: 0.85;
   }
 
   .cadre {
-    margin: 34px 0;
+    margin: 30px 0 14px;
     padding: 26px;
     border-radius: var(--radius-lg);
     background: #fff;
@@ -72,6 +228,26 @@ const FICHIER = '/qr-code.svg';
     height: 232px;
   }
 
+  .qr--invalide {
+    opacity: 0.2;
+  }
+
+  .cible {
+    margin-bottom: 26px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    word-break: break-all;
+    opacity: 0.8;
+  }
+
+  .boutons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
   /* Bouton plein, comme celui de la bannière d'avis : c'est l'action
      principale de la page. */
   .bouton {
@@ -79,18 +255,31 @@ const FICHIER = '/qr-code.svg';
     align-items: center;
     gap: 12px;
     padding: 14px 32px;
+    border: 2px solid var(--cream);
     border-radius: 999px;
     background: var(--cream);
     color: var(--blue);
+    font: inherit;
     font-weight: 800;
     font-size: 1rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+    cursor: pointer;
     transition: transform 0.2s, opacity 0.2s;
   }
 
-  .bouton:hover,
-  .bouton:focus-visible {
+  .bouton--clair {
+    background: transparent;
+    color: var(--cream);
+  }
+
+  .bouton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .bouton:not(:disabled):hover,
+  .bouton:not(:disabled):focus-visible {
     transform: translateY(-2px);
   }
 
@@ -98,12 +287,12 @@ const FICHIER = '/qr-code.svg';
     transition: transform 0.2s;
   }
 
-  .bouton:hover .arrow {
+  .bouton:not(:disabled):hover .arrow {
     transform: translateY(3px);
   }
 
   .note {
-    max-width: 44ch;
+    max-width: 46ch;
     margin-top: 22px;
     font-size: 0.9rem;
     line-height: 1.6;
@@ -115,6 +304,7 @@ const FICHIER = '/qr-code.svg';
     margin-top: 30px;
     font-weight: 700;
     font-size: 0.9rem;
+    line-height: 1.8;
   }
 
   .retour a {
@@ -126,5 +316,11 @@ const FICHIER = '/qr-code.svg';
   .retour a:hover,
   .retour a:focus-visible {
     border-bottom-color: var(--cream);
+  }
+
+  @media (max-width: 520px) {
+    .reglages {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

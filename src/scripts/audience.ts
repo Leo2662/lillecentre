@@ -9,6 +9,8 @@
 //   v : 1 si c'est une arrivée sur la page, 0 pour un rechargement ou un
 //       retour arrière
 //   e : 1 si l'on arrive d'un autre site ou en accès direct (début de visite)
+//   q : le code du QR code imprimé qui a mené ici (?qr=flyers-11/26), à
+//       l'arrivée seulement ; voir la page /qr-code/ qui génère ces QR codes
 // Le site précédent n'est pas transmis : seul le booléen « e » sort d'ici.
 //
 // Pas de cookie, pas de localStorage, pas d'identifiant, pas d'empreinte du
@@ -38,7 +40,23 @@ function compter() {
     // référent illisible : compté comme une arrivée de l'extérieur
   }
 
-  const donnees = { s: 'lillecentre', p: location.pathname, v: arrivee ? 1 : 0, e: arrivee && !depuisLeSite ? 1 : 0 };
+  const parametres = new URLSearchParams(location.search);
+  const qr = parametres.get('qr');
+  if (qr !== null) {
+    // Le code a servi : on le retire de l'adresse, pour qu'un lien copié ou
+    // un favori ne compte pas de faux scans plus tard.
+    parametres.delete('qr');
+    const reste = parametres.toString();
+    history.replaceState(history.state, '', location.pathname + (reste ? `?${reste}` : '') + location.hash);
+  }
+
+  const donnees: Record<string, string | number> = {
+    s: 'lillecentre',
+    p: location.pathname,
+    v: arrivee ? 1 : 0,
+    e: arrivee && !depuisLeSite ? 1 : 0,
+  };
+  if (qr && arrivee) donnees.q = qr.slice(0, 40);
 
   if (!DOMAINES_PROD.includes(location.hostname)) {
     console.info('[audience]', donnees, refus() ? '(non envoyé : opposition du navigateur)' : '(non envoyé hors production)');
